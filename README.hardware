@@ -1,0 +1,88 @@
+		Nvidia Orin Board Support Package
+
+Table of Contents
+=================
+
+1. Supported Boards
+2. Change History
+3. BSP Features
+4. BSP Notes
+
+
+1. Supported Boards
+===================
+
+This BSP supports the following boards:
+
+   + Nvidia Jetson AGX Orin developer kit - tegra234-p3737-0000+p3701-0005
+   
+2. Change History
+=================
+  - 2024/06: Wind River Linux 10.22 RCPL17. Standard 64bit Linux
+  - SDK: Nvidia Jetpack 6.0 (Production release) & meta-tegra (wip-l4t-r36.3.0)
+
+
+3. BSP Features
+===============
+
+3.1 Supported Features
+======================
+
+The following BSP features are validated and supported.
+
+  o Bus
+	+ 8 x I2C
+	+ 4 x UART
+	+ 3 x SPI
+	+ 4 x USB
+	+ GPIO
+	+ UPHY: Up to 2 x8, 1 x4, 2 x1 (PCIe Gen4, Root Port & Endpoint)
+	
+  o Network
+	+ Ethernet: 1 x 1GbE
+	
+  o Memory & Storage
+	+ 64GB eMMC
+	+ 64MB NOR Boot Flash
+	+ 64GB 256-bit LPDDR5 DRAM
+	+ Video decode
+	+ Display: 1x 8K60 multi-mode DP 1.4a (+MST)
+	
+  o Multimedia
+	+ USB Camera
+    + Programmable Vision Accelerator v2.0
+
+  o Misc Devices
+    + 2 x DLA - NVDLA v2.0
+
+3.2 Unsupported Features
+========================
+
+The following features are not supported and not validated same as SDK.
+
+	x CAN
+	x I2S
+	x DMIC
+	x DSPK
+	x Ethernet: 1 x 10GbE
+	x D-PHY 2.1 (up to 40Gbps for 32GB Orin) | C-PHY 2.0 (up to 164Gbps for 64GB Orin)
+	x Gen 4.2 Video Imaging Compositor (VIC) 2D Engine
+	x CSI Camera: Up to 6 cameras (16 via virtual channels) 16 lanes MIPI CSI-2
+
+4. BSP Notes
+============
+
+4.1 Target Notes
+----------------
+
+NOTE: This BSP is only validated in the following environment with booting from
+eMMC, if used in a different environment it may run into unknown issues.
+
+4.1.1 Validated Board Info
+--------------------------
+
+	Processor:		Nvidia Jetson AGX Orin
+	Board:			Nvidia Jetson AGX Orin Developer kit
+	BootLoader:		Jetson UEFI firmware
+	BootLoader Version:	36.3.0
+

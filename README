@@ -1,0 +1,126 @@
+Nvidia Jetson AGX Orin developer kit - Board Support Package
+
+1. About this document
+======================
+This document describes common and non-hardware specific information.
+Please refer to README.hardware for hardware specific information.
+
+Dependencies
+------------
+This layer depends on meta-tegra.
+
+Maintenance
+-----------
+This layer is maintained by Wind River Systems, Inc.
+Contact <support@windriver.com> or your support representative for more
+information on submitting changes.
+
+Building the Nvidia-orin layer
+------------------------------
+This layer should be added to bblayers.conf. This
+is done automatically when using the Wind River configure wrapper.
+
+License
+-------
+Copyright (C) 2024 Wind River Systems, Inc.
+
+Source code included in the tree for individual recipes is under the LICENSE
+stated in the associated recipe (.bb file) unless otherwise stated.
+
+The metadata is under the following license unless otherwise stated.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+2. BSP Kernel and Distros
+=========================
+
+The following table summarizes the valid Wind River Linux distros for this BSP.
+'Y' in each content cell stands for supported; 'N' stands for not supported:
+
+  +--------------+-------------+------------------+-------------------+--------------+
+  | valid/distro |   wrlinux   | wrlinux-graphics | wrlinux-installer | wrlinux-tiny |
+  +--------------+-------------+------------------+-------------------+--------------+
+  |    valid     |      Y      |        Y         |         N         |       N      |
+  +--------------+-------------+------------------+-------------------+--------------+
+
+For the supported kernel type for this BSP, please check the TARGET_SUPPORTED_KTYPES
+by running 'bitbake -e virtual/kernel | grep "^TARGET_SUPPORTED_KTYPES="'.
+
+Note: Currently preempt-rt kernel type is not supported.
+
+3. Board Specific Patches
+=========================
+
+To get a list of patches applied to the kernel specific to this BSP along with
+patch descriptions use git-whatchanged on the default kernel. For example:
+
+        %> cd tmp-glibc/work-shared/<bsp_name>/kernel-source
+        %> git whatchanged <kernel_version>/standard/base..<kernel_version>/standard/<bsp_name>
+
+
+4. Boot Instructions
+====================
+
+4.1 Upading images in eMMC flash
+================================
+This section provides details about how to update a new Nvidia Jetson AGX Orin
+developer kit board with the latest image into it.
+More details about hardware configuration & software details can be obtained
+from below Nvidia website
+
+https://www.nvidia.com/en-in/autonomous-machines/embedded-systems/jetson-orin/
+Jetson AGX Orin Developer Kit | Nvidia
+
+4.1.1 Nvidia Jetson AGX Orin board port connectivity
+====================================================
+
+	First, connect the following to the developer kit;
+	* DisplayPort cable attached to a computer monitor
+	* For a monitor with HDMI input, use an active DisplayPort to HDMI adapter/cable.
+	* USB keyboard and mouse
+	* Ethernet cable (optional if you plan to connect to the Internet via WLAN)
+	* Then connect the included power supply into the USB Type-C port above the DC jack
+	* connet the USB-C type (near to 40-pin expander) to host machine for image upgrade purpose
+	  connet the debug console port USB-A type (near to DP port) to host machine
+    * Your developer kit should automatically power on, and the white LED near
+    * the power button will light. If not, press the Power button.
+	* open the debug console port from host machine 'sudo minicom -D /dev/ttyACM0 -8 -b 115200'
+	* Wait up to few mins to have the Linux prompt on the debug console port
+
+4.1.2 Updating Nvidia Jetson AGX Orin with latest image
+=======================================================
+	a) Open a debug console on the Host PC, login with Ubuntu/WR linux default credentials provided.
+		Wind River Linux Graphics LTS 22.33 Update 17 nvidia-orin ttyTCU0
+		nvidia-orin login: root
+
+	b) Run the below command to boot the board into recovery mode
+		root@nvidia-orin:~# reboot --force forced-recovery
+		
+	c) After running the above step, goto host machine where the USB Type C cable is connected
+		* copy the boot image from the build machine to host machine into a specific path
+		
+		* untar the boot image using below command
+			tar -xvf ../wrlinux-image-std-nvidia-orin.tegraflash.tar.gz
+			
+		* Execute the below command with sudo permission to start the image upgrade
+			sudo ./doflash
+			
+		* Wait until the above command is executed. The Nvidia board will go for reboot automatically after the upgrade.
+
+		* Now the Nvidia target board shall be booted with the updated image.
