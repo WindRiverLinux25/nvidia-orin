@@ -1,5 +1,7 @@
+# CUDA SDK
+TOOLCHAIN_HOST_TASK:append = " nativesdk-packagegroup-cuda-sdk-host"
+
 # CUDA libraries
-TOOLCHAIN_HOST_TASK += "nativesdk-packagegroup-cuda-sdk-host"
 IMAGE_INSTALL += "cuda-cccl cuda-command-line-tools cuda-compat cuda-compiler \
     cuda-cudart cuda-cuobjdump cuda-cupti cuda-cuxxfilt cuda-driver cuda-gdb \
     cuda-libraries cuda-nvcc-headers cuda-nvcc cuda-nvdisasm cuda-nvml \
@@ -12,7 +14,6 @@ IMAGE_INSTALL += "cuda-cccl cuda-command-line-tools cuda-compat cuda-compiler \
 IMAGE_FEATURES += "ssh-server-openssh"
 
 # Tests
-TOOLCHAIN_HOST_TASK += "nativesdk-packagegroup-cuda-sdk-host"
 IMAGE_FEATURES += "splash x11-base x11-sato hwcodecs"
 IMAGE_INSTALL += "\
     argus-samples \
