@@ -3,84 +3,9 @@ inherit l4t_bsp ${TEGRA_UEFI_SIGNING_CLASS}
 
 KERNEL_DISABLE_FW_USER_HELPER ?= "y"
 
-SCMVERSION ??= "y"
-
 # All of our device trees are out-of-tree
 KERNEL_DEVICETREE:forcevariable = ""
 
-set_scmversion() {
-    if [ "${SCMVERSION}" = "y" -a -d "${S}/.git" ]; then
-        head=$(git --git-dir=${S}/.git rev-parse --verify --short HEAD 2>/dev/null || true)
-        [ -z "$head" ] || echo "+g$head" > ${S}/.scmversion
-    fi
-}
-do_kernel_checkout[postfuncs] += "set_scmversion"
-
-sign_kernel_image() {
-    tegra_uefi_sbsign "$1"
-    shift
-    while [ $# -gt 0 ]; do
-        tegra_uefi_attach_sign "$1"
-        shift
-    done
-}
-
-do_sign_kernel() {
-    sign_kernel_image ${KERNEL_OUTPUT_DIR}/${KERNEL_IMAGETYPE}
-}
-do_sign_kernel[dirs] = "${B}"
-do_sign_kernel[depends] += "${TEGRA_UEFI_SIGNING_TASKDEPS}"
-
-addtask sign_kernel after do_compile before do_install
-
-sign_bootimg() {
-    tegra_uefi_attach_sign "$1"
-}
-
-bootimg_from_bundled_initramfs() {
-    if [ ! -z "${INITRAMFS_IMAGE}" -a "${INITRAMFS_IMAGE_BUNDLE}" = "1" ]; then
-        rm -f ${WORKDIR}/initrd
-        touch ${WORKDIR}/initrd
-        for imageType in ${KERNEL_IMAGETYPES} ; do
-            if [ "$imageType" = "fitImage" ] ; then
-                continue
-            fi
-            initramfs_base_name=${imageType}-${INITRAMFS_NAME}
-            initramfs_symlink_name=${imageType}-${INITRAMFS_LINK_NAME}
-            ${STAGING_BINDIR_NATIVE}/tegra-flash/mkbootimg \
-                                    --kernel $deployDir/${initramfs_base_name}.bin \
-                                    --ramdisk ${WORKDIR}/initrd \
-                                    --cmdline "${KERNEL_ARGS}" \
-                                    --output $deployDir/${initramfs_base_name}.cboot
-	    sign_bootimg $deployDir/${initramfs_base_name}.cboot
-            chmod 0644 $deployDir/${initramfs_base_name}.cboot
-            ln -sf ${initramfs_base_name}.cboot $deployDir/${initramfs_symlink_name}.cboot
-        done
-    elif [  -z "${INITRAMFS_IMAGE}" ]; then
-        rm -f ${WORKDIR}/initrd
-        touch ${WORKDIR}/initrd
-        for imageType in ${KERNEL_IMAGETYPES} ; do
-            if [ "$imageType" = "fitImage" ] ; then
-                continue
-            fi
-	    baseName=$imageType-${KERNEL_IMAGE_NAME}
-            ${STAGING_BINDIR_NATIVE}/tegra-flash/mkbootimg \
-                                    --kernel $deployDir/${baseName}.bin \
-                                    --ramdisk ${WORKDIR}/initrd \
-                                    --cmdline "${KERNEL_ARGS}" \
-                                    --output $deployDir/${baseName}.cboot
-	    sign_bootimg $deployDir/${initramfs_base_name}.cboot
-            chmod 0644 $deployDir/${baseName}.cboot
-            ln -sf ${baseName}.cboot $deployDir/$imageType-${KERNEL_IMAGE_LINK_NAME}.cboot
-            ln -sf ${baseName}.cboot $deployDir/$imageType.cboot
-        done
-    fi
-}
-do_deploy:append() {
-    bootimg_from_bundled_initramfs
-}
-
-do_deploy[depends] += "tegra-flashtools-native:do_populate_sysroot ${TEGRA_UEFI_SIGNING_TASKDEPS}"
 
 COMPATIBLE_MACHINE = "(tegra|nvidia-orin)"
 

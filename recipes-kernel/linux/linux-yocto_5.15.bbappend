@@ -10,6 +10,6 @@ COMPATIBLE_MACHINE:nvidia-orin = "nvidia-orin"
 KBRANCH:nvidia-orin  = "v5.15/standard/nvidia-orin"
 KMACHINE:nvidia-orin = "nvidia-orin"
 
-SRC_URI += "file://orin.scc"
+SRC_URI:append:nvidia-orin = " file://orin.scc"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/linux-yocto:"
+FILESEXTRAPATHS:prepend:nvidia-orin := "${THISDIR}/linux-yocto:"
