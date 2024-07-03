@@ -47,6 +47,8 @@ CUSTOMER_RECIPES:tegra += " \
     libnpp \
     libnvjitlink \
     libnvvpi3 \
+    nsight-systems \
+    python3-tensorrt \
     tegra-binaries \
     tegra-bootfiles \
     tegra-configs \
