@@ -74,11 +74,33 @@ patch descriptions use git-whatchanged on the default kernel. For example:
         %> git whatchanged <kernel_version>/standard/base..<kernel_version>/standard/<bsp_name>
 
 
-4. Boot Instructions
+4. Build Instructions
+=====================
+
+# Download project for nvidia-orin
+$ ./wrlinux-x/setup.sh --dl-layers --machine nvidia-orin --distro wrlinux-graphics
+
+# Create a build
+$ . environment-setup-x86_64-wrlinuxsdk-linux
+$ . oe-init-build-env
+
+# Enable CUSTOMER_RECIPES
+# WARNING: The following action will enable NVIDIA proprietary licenses recipes
+# and download NVIDIA proprietary sources, you must consult your legal
+# department before enable them for the build.
+#
+# Add the following lines conf/local.conf
+require conf/machine/include/nvidia-orin-proprietary-license-recipes.inc
+BB_NO_NETWORK = '0'
+
+# Build the image
+$ bitbake wrlinux-image-std
+
+5. Boot Instructions
 ====================
 
-4.1 Upading images in eMMC flash
-================================
+5.1 Updating images in eMMC flash
+=================================
 This section provides details about how to update a new Nvidia Jetson AGX Orin
 developer kit board with the latest image into it.
 More details about hardware configuration & software details can be obtained
@@ -87,7 +109,7 @@ from below Nvidia website
 https://www.nvidia.com/en-in/autonomous-machines/embedded-systems/jetson-orin/
 Jetson AGX Orin Developer Kit | Nvidia
 
-4.1.1 Nvidia Jetson AGX Orin board port connectivity
+5.1.1 Nvidia Jetson AGX Orin board port connectivity
 ====================================================
 
 	First, connect the following to the developer kit;
@@ -98,12 +120,12 @@ Jetson AGX Orin Developer Kit | Nvidia
 	* Then connect the included power supply into the USB Type-C port above the DC jack
 	* connet the USB-C type (near to 40-pin expander) to host machine for image upgrade purpose
 	  connet the debug console port USB-A type (near to DP port) to host machine
-    * Your developer kit should automatically power on, and the white LED near
-    * the power button will light. If not, press the Power button.
+	* Your developer kit should automatically power on, and the white LED near
+          the power button will light. If not, press the Power button.
 	* open the debug console port from host machine 'sudo minicom -D /dev/ttyACM0 -8 -b 115200'
 	* Wait up to few mins to have the Linux prompt on the debug console port
 
-4.1.2 Updating Nvidia Jetson AGX Orin with latest image
+5.1.2 Updating Nvidia Jetson AGX Orin with latest image
 =======================================================
 	a) Open a debug console on the Host PC, login with Ubuntu/WR linux default credentials provided.
 		Wind River Linux Graphics LTS 22.33 Update 17 nvidia-orin ttyTCU0
@@ -114,13 +136,10 @@ Jetson AGX Orin Developer Kit | Nvidia
 		
 	c) After running the above step, goto host machine where the USB Type C cable is connected
 		* copy the boot image from the build machine to host machine into a specific path
-		
 		* untar the boot image using below command
-			tar -xvf ../wrlinux-image-std-nvidia-orin.tegraflash.tar.gz
-			
+			tar -xvf wrlinux-image-std-nvidia-orin.tegraflash.tar.gz
 		* Execute the below command with sudo permission to start the image upgrade
 			sudo ./doflash
-			
-		* Wait until the above command is executed. The Nvidia board will go for reboot automatically after the upgrade.
-
+		* Wait until the above command is executed. The Nvidia board will go for reboot
+                  automatically after the upgrade.
 		* Now the Nvidia target board shall be booted with the updated image.
