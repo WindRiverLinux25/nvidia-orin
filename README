@@ -62,7 +62,6 @@ The following table summarizes the valid Wind River Linux distros for this BSP.
 For the supported kernel type for this BSP, please check the TARGET_SUPPORTED_KTYPES
 by running 'bitbake -e virtual/kernel | grep "^TARGET_SUPPORTED_KTYPES="'.
 
-Note: Currently preempt-rt kernel type is not supported.
 
 3. Board Specific Patches
 =========================

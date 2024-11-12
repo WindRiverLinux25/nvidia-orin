@@ -11,6 +11,8 @@ COMPATIBLE_MACHINE = "(tegra|nvidia-orin)"
 
 RRECOMMENDS:${KERNEL_PACKAGE_NAME}-base = ""
 
+TARGET_SUPPORTED_KTYPES:nvidia-orin = "standard preempt-rt"
+
 # kernel.bbclass automatically adds a dependency on the intramfs image
 # even if INITRAMFS_IMAGE_BUNDLE is disabled.  This creates a circular
 # dependency for tegra builds, where we need to combine initramfs (as an
