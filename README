@@ -95,6 +95,11 @@ BB_NO_NETWORK = '0'
 # Build the image
 $ bitbake wrlinux-image-std
 
+To build 'core-image-minimal/base/sato' with 'poky' distro, it additionally requires
+'pam' in DISTRO_FEATURES to help the build process.
+Edit conf/local.conf to use:
+$ echo 'DISTRO_FEATURES:append = " pam"' >> conf/local.conf
+
 5. Boot Instructions
 ====================
 
