@@ -6,9 +6,6 @@ require linux-yocto-tegra.inc
 
 COMPATIBLE_MACHINE:nvidia-orin = "nvidia-orin"
 
-KBRANCH:nvidia-orin  = "v5.15/standard/nvidia-orin"
+KBRANCH:nvidia-orin  = "v6.6/standard/nvidia-orin"
 KMACHINE:nvidia-orin = "nvidia-orin"
 
-SRC_URI:append:nvidia-orin = " file://orin.scc"
-
-FILESEXTRAPATHS:prepend:nvidia-orin := "${THISDIR}/linux-yocto:"
