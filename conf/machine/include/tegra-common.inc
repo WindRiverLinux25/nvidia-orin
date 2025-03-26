@@ -14,7 +14,9 @@ UBOOT_EXTLINUX_INITRD ?= "${@'/boot/initrd' if d.getVar('INITRAMFS_IMAGE') != ''
 
 NVIDIA_BOARD ?= "generic"
 
-TEGRA_BOOTCONTROL_OVERLAYS ?= "L4TConfiguration.dtbo"
+TEGRA_UEFI_MINIMAL ?= "0"
+TEGRA_BOOTCONTROL_MINIMAL_UEFI ?= "${@'BootOrderEmmc.dtbo' if bb.utils.to_boolean(d.getVar('TEGRA_UEFI_MINIMAL')) else ''}"
+TEGRA_BOOTCONTROL_OVERLAYS ?= "L4TConfiguration.dtbo ${TEGRA_BOOTCONTROL_MINIMAL_UEFI}"
 TEGRA_BOOTCONTROL_OVERLAYS += "${@'L4TConfiguration-RootfsRedundancyLevelABEnable.dtbo' if bb.utils.to_boolean(d.getVar('USE_REDUNDANT_FLASH_LAYOUT')) else ''}"
 TEGRA_PLUGIN_MANAGER_OVERLAYS ??= ""
 TEGRA_DCE_OVERLAYS ??= ""
@@ -27,7 +29,7 @@ TNSPEC_BOOTDEV_DEFAULT ??= "mmcblk0p1"
 TNSPEC_BOOTDEV ??= "${TNSPEC_BOOTDEV_DEFAULT}"
 
 PREFERRED_PROVIDER_virtual/kernel ?= "linux-yocto"
-PREFERRED_PROVIDER_virtual/dtb ?= "nvidia-kernel-oot"
+PREFERRED_PROVIDER_virtual/dtb ?= "nvidia-kernel-oot-dtb"
 PREFERRED_PROVIDER_virtual/bootloader ?= "edk2-firmware-tegra"
 OPTEE_MM_PROVIDER = "${@'tegra-uefi-prebuilt' if d.getVar('PREFERRED_PROVIDER_virtual/bootloader') == 'tegra-uefi-prebuilt' else 'standalone-mm-optee-tegra'}"
 PREFERRED_PROVIDER_standalone-mm-optee-tegra ?= "${OPTEE_MM_PROVIDER}"
@@ -55,7 +57,7 @@ PREFERRED_RPROVIDER_optee-nvsamples ?= "${@'nvidia-l4t-optee-nvsamples' if oe.ty
 PREFERRED_RPROVIDER_optee-nvsamples-hwkey-agent ?= "${@'nvidia-l4t-optee-nvsamples-hwkey-agent' if oe.types.boolean(d.getVar('USE_PREBUILT_OPTEE')) else 'optee-nvsamples-hwkey-agent'}"
 PREFERRED_RPROVIDER_optee-nvsamples-luks-srv ?= "${@'nvidia-l4t-optee-nvsamples-luks-srv' if oe.types.boolean(d.getVar('USE_PREBUILT_OPTEE')) else 'optee-nvsamples-luks-srv'}"
 
-TEGRA_OPTEE_VERSION ?= "${@'' if oe.types.boolean(d.getVar('USE_PREBUILT_OPTEE')) else '3.22.0-l4t%'}"
+TEGRA_OPTEE_VERSION ?= "${@'' if oe.types.boolean(d.getVar('USE_PREBUILT_OPTEE')) else '4.2-l4t%'}"
 PREFERRED_VERSION_optee-os = "${TEGRA_OPTEE_VERSION}"
 PREFERRED_VERSION_optee-os-tadevkit = "${TEGRA_OPTEE_VERSION}"
 PREFERRED_VERSION_optee-client = "${TEGRA_OPTEE_VERSION}"
@@ -74,7 +76,6 @@ INITRAMFS_FSTYPES:append = "${TEGRA_INITRAMFS_FSTYPES}"
 TEGRA_INITRD_FLASH_INITRAMFS_FSTYPES ?= "${@'' if d.getVar('INITRAMFS_IMAGE_BUNDLE') == '1' else ' cpio.gz.cboot'}"
 TEGRAFLASH_INITRD_FLASH_IMAGE ?= "tegra-initrd-flash-initramfs"
 
-BOOT_PARTITIONS_ON_EMMC ?= "0"
 TEGRAFLASH_NO_INTERNAL_STORAGE ?= "0"
 
 UBOOT_EXTLINUX ?= "1"
@@ -92,19 +93,21 @@ PREFERRED_PROVIDER_virtual/xserver ?= "xserver-xorg"
 PREFERRED_PROVIDER_virtual/xserver-xf86 ?= "xserver-xorg"
 XSERVER ?= "xserver-xorg xf86-input-evdev xserver-xorg-video-nvidia xserver-xorg-module-libwfb"
 
-CUDA_VERSION ?= "12.2"
+CUDA_VERSION ?= "12.6"
 CUDA_ARCHITECTURES ?= "${TEGRA_CUDA_ARCHITECTURE}"
 CUDA_NVCC_ARCH_FLAGS ?= "--gpu-architecture=compute_${TEGRA_CUDA_ARCHITECTURE} --gpu-code=sm_${TEGRA_CUDA_ARCHITECTURE}"
 
 L4T_BSP_ARCH = "tegra"
 L4T_BSP_PKGARCH = "${TEGRA_PKGARCH}"
 
-PREFERRED_VERSION_weston = "10.0%"
-
 EFI_PROVIDER ?= "l4t-launcher"
 TEGRA_SIGNING_ENV ?= "CHIPREV=${TEGRA_CHIPREV} BOARDID=${TEGRA_BOARDID} FAB=${TEGRA_FAB} BOARDSKU=${TEGRA_BOARDSKU} BOARDREV=${TEGRA_BOARDREV}"
 
-TEGRA_FLASHVARS ?= "BPFDTB_FILE BPF_FILE BR_CMD_CONFIG DEVICEPROD_CONFIG DEVICE_CONFIG DEV_PARAMS DEV_PARAMS_B EMC_FUSE_DEV_PARAMS EMMC_CFG GPIOINT_CONFIG MB2BCT_CFG MINRATCHET_CONFIG MISC_COLD_BOOT_CONFIG MISC_CONFIG PINMUX_CONFIG PMC_CONFIG PMIC_CONFIG PROD_CONFIG SCR_COLD_BOOT_CONFIG SCR_CONFIG TBCDTB_FILE UPHY_CONFIG WB0SDRAM_BCT"
+TEGRA_FLASHVARS ?= "BPFDTB_FILE BPF_FILE BR_CMD_CONFIG CHIP_SKU DEVICEPROD_CONFIG DEVICE_CONFIG DEV_PARAMS DEV_PARAMS_B EMC_FUSE_DEV_PARAMS GPIOINT_CONFIG MB2BCT_CFG MINRATCHET_CONFIG MISC_CONFIG PINMUX_CONFIG PMC_CONFIG PMIC_CONFIG PROD_CONFIG SCR_CONFIG RAMCODE TBCDTB_FILE UPHY_CONFIG WB0SDRAM_BCT"
+TEGRA_FLASHVAR_TBCDTB_FILE ?= "@DTBFILE@"
+TEGRA_FLASH_CHECK_VARS ?= "BOARDID BOARDSKU"
+TEGRA_FLASH_CHECK_BOARDID ?= "${TEGRA_BOARDID}"
+TEGRA_FLASH_CHECK_BOARDSKU ?= "${TEGRA_BOARDSKU}"
 
 EMMC_BCTS ?= "${EMMC_BCT}${@',' + d.getVar('EMMC_BCT_OVERRIDE') if d.getVar('EMMC_BCT_OVERRIDE') else ''}"
 
