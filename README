@@ -132,7 +132,7 @@ Jetson AGX Orin Developer Kit | Nvidia
 5.1.2 Updating Nvidia Jetson AGX Orin with latest image
 =======================================================
 	a) Open a debug console on the Host PC, login with Ubuntu/WR linux default credentials provided.
-		Wind River Linux Graphics LTS 22.33 Update 17 nvidia-orin ttyTCU0
+	 	Wind River Linux Graphics LTS 24.33 Update 9 nvidia-orin ttyTCU0
 		nvidia-orin login: root
 
 	b) Run the below command to boot the board into recovery mode

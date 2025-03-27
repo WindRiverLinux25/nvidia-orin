@@ -18,9 +18,8 @@ This BSP supports the following boards:
    
 2. Change History
 =================
-  - 2024/06: Wind River Linux 10.22 RCPL17. Standard 64bit Linux
-  - SDK: Nvidia Jetpack 6.0 (Production release) & meta-tegra (wip-l4t-r36.3.0)
-
+  - 2025/05 Wind River Linux 10.24 RCPL9. Standard & Preempt-rt 64bit Linux
+  - SDK: Nvidia Jetpack 6.1 (Production release) & meta-tegra (R36.4/JP 6.1 - scarthgap)
 
 3. BSP Features
 ===============
@@ -84,5 +83,17 @@ eMMC, if used in a different environment it may run into unknown issues.
 	Processor:		Nvidia Jetson AGX Orin
 	Board:			Nvidia Jetson AGX Orin Developer kit
 	BootLoader:		Jetson UEFI firmware
-	BootLoader Version:	36.3.0
+	BootLoader Version:	36.4.0
+
+
+Note: There is a issue with seamless display not working, where the
+    handoff from the initial kernel frame-buffer driver such as simplefb or
+    simple-drm to the main NVIDIA display driver does not work. 
+    This can be workaround by ...
+
+    *. Disabling display handoff in UEFI so that simplefb/simpledrm is not
+       used and just have the main display driver start the display.
+
+    There are more details in this forum thread:
+    https://forums.developer.nvidia.com/t/seamless-display-handoff-on-bring-your-own-kernel/328849
 
