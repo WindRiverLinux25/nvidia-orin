@@ -1,36 +1,29 @@
-# CUDA SDK
-TOOLCHAIN_HOST_TASK:append = " nativesdk-packagegroup-cuda-sdk-host"
+IMAGE_INSTALL:append = " ${@bb.utils.contains('BUILD_NVIDIA_PROPRIETARY_PACKAGE', '1', \
+	'tegra-tools-tegrastats \
+	cuda-samples \
+	argus-samples \
+	gstreamer-tests \
+	l4t-graphics-demos-x11 \
+	nvgstapps \
+	tegra-mmapi-tests \
+	vpi3-tests \
+	tensorrt-tests \
+	cudnn-samples \
+	deepstream-tests \
+	python3-jetson-stats \
+	nvidia-docker \
+	nvidia-docker-tests \
+	optee-nvsamples \
+	optee-test \
+	python3-jetson-stats \
+	v4l-utils \
+	dtc', '', d)}"
 
-# CUDA libraries
-IMAGE_INSTALL += "cuda-cccl cuda-command-line-tools cuda-compat cuda-compiler \
-    cuda-cudart cuda-cuobjdump cuda-cupti cuda-cuxxfilt cuda-driver cuda-gdb \
-    cuda-libraries cuda-nvcc-headers cuda-nvcc cuda-nvdisasm cuda-nvml \
-    cuda-nvprune cuda-nvrtc cuda-nvtx cuda-profiler-api cuda-samples \
-    cuda-sanitizer cuda-toolkit libcublas libcudla libcufft libcufile libcurand \
-    libcusolver libcusparse libnpp libnvjitlink \
-"
+IMAGE_INSTALL:append = " ${@bb.utils.contains('BUILD_NVIDIA_PROPRIETARY_PACKAGE', '1', \
+	'', 'kernel-devicetree', d)}"
 
-# Base utils
-IMAGE_FEATURES += "ssh-server-openssh"
+IMAGE_INSTALL:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'opengl x11', 'mesa-demos', '', d)}"
+IMAGE_INSTALL:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'vulkan', 'vulkan-tools', '', d)}"
 
-# Tests
-IMAGE_FEATURES += "splash x11-base x11-sato hwcodecs"
-IMAGE_INSTALL += "\
-    argus-samples \
-    cuda-libraries \
-    cuda-samples \
-    git \
-    glmark2 \
-    kernel-module-uvcvideo \
-    l4t-graphics-demos-x11 \
-    mesa-demos \
-    nvgstapps \
-"
-# Tools:
-# Add the canutils and i2c-tools packages
-IMAGE_INSTALL += "i2c-tools canutils rt-tests"
-
-# TensorRT, cudnn, mmapi, and vpi3 libs+tests
-IMAGE_INSTALL += "tensorrt-core tensorrt-plugins tensorrt-trtexec tensorrt-trtexec-prebuilt"
-IMAGE_INSTALL += "cudnn-samples cudnn"
-IMAGE_INSTALL += "libnvvpi3"
+TOOLCHAIN_HOST_TASK:append = " ${@bb.utils.contains('BUILD_NVIDIA_PROPRIETARY_PACKAGE', '1', \
+	'nativesdk-packagegroup-cuda-sdk-host', '', d)}"
