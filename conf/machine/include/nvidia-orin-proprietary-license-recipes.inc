@@ -88,4 +88,8 @@ CUSTOMER_RECIPES:tegra += " \
     tensorrt-trtexec-prebuilt \
     tos-prebuilt \
     xserver-xorg-video-nvidia \
+    nvidia-kernel-oot-dtb \
+    tegra-cuda-utils \
+    gstreamer1.0-plugins-nvipcpipeline \
+    gstreamer1.0-plugins-nvunixfd \
 "
