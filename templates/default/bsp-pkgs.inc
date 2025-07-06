@@ -17,7 +17,9 @@ IMAGE_INSTALL:append = " ${@bb.utils.contains('BUILD_NVIDIA_PROPRIETARY_PACKAGE'
 	optee-test \
 	python3-jetson-stats \
 	v4l-utils \
-	dtc', '', d)}"
+	dtc \
+	can-utils \
+	devmem2', '', d)}"
 
 IMAGE_INSTALL:append = " ${@bb.utils.contains('BUILD_NVIDIA_PROPRIETARY_PACKAGE', '1', \
 	'', 'kernel-devicetree', d)}"
