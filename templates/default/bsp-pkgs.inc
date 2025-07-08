@@ -19,7 +19,8 @@ IMAGE_INSTALL:append = " ${@bb.utils.contains('BUILD_NVIDIA_PROPRIETARY_PACKAGE'
 	v4l-utils \
 	dtc \
 	can-utils \
-	devmem2', '', d)}"
+	devmem2 \
+	alsa-utils', '', d)}"
 
 IMAGE_INSTALL:append = " ${@bb.utils.contains('BUILD_NVIDIA_PROPRIETARY_PACKAGE', '1', \
 	'', 'kernel-devicetree', d)}"
