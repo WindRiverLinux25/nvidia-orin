@@ -1,4 +1,5 @@
-		Nvidia Orin Board Support Package
+		NVIDIA Jetson AGX Orin Series Board Support Package
+
 
 Table of Contents
 =================
@@ -14,59 +15,94 @@ Table of Contents
 
 This BSP supports the following boards:
 
-   + Nvidia Jetson AGX Orin developer kit - tegra234-p3737-0000+p3701-0005
-   
+   + Nvidia Jetson AGX Orin developer kit: Jetson AGX Orin 64GB module (P3701-0005) +
+					   Jetson AGX Orin reference carrier board (P3737-0000)
+
+
 2. Change History
 =================
-  - 2025/05 Wind River Linux 10.24 RCPL9. Standard & Preempt-rt 64bit Linux
-  - SDK: Nvidia Jetpack 6.1 (Production release) & meta-tegra (R36.4/JP 6.1 - scarthgap)
+  - 2025/09 (LINUXPG-2676): Wind River Linux 10.25 RCPL01. Standard and Preempt-rt based on
+			    NVIDIA Jetpack 6.2, Jetson Linux 36.4.3 and OpenEmbedded for Tegra.
+
 
 3. BSP Features
 ===============
 
 3.1 Supported Features
-======================
+----------------------
 
-The following BSP features are validated and supported.
+The following BSP features are validated and supported on boards where
+the corresponding h/w features exist.
+
+  o Core
+	+ CPU: Up to 12-core Arm Cortex-A78AE v8.2 64-bit CPU 3MB L2 + 6MB L3, 2.2 GHz
+	+ GPU: Up to NVIDIA Ampere architecture with 2048 NVIDIA CUDA cores and 64 Tensor Cores, up to 1.3 GHz
+
+  o Engine
+	+ Deep Learning Accelerator: 2x NVDLA v2.0, up to 1.6 GHz
+	+ Vision Accelerator: PVA v2.0
+	+ Video Encoder: H.264, H.265 (HEVC), AV1
+	+ Video Decoder: H.264, H.265 (HEVC), VP8, VP9, VC1, AV1, MPEG2, MPEG4
+	+ JPEG Codec: Color space conversion, Single image and batched image decoding
+
+  o Memory
+	+ 64GB 256-bit LPDDR5 204.8 GB/s
 
   o Bus
-	+ 8 x I2C
+	+ 9 x I2C
+	+ 8 x I2S
+	+ 2 x CAN
 	+ 4 x UART
 	+ 3 x SPI
-	+ 4 x USB
-	+ GPIO
-	+ UPHY: Up to 2 x8, 1 x4, 2 x1 (PCIe Gen4, Root Port & Endpoint)
+	+ 4 x USB 2.0
+	+ 3 x USB 3.2 Gen2
+	+ 1 x PCIe: Standard PCIe x16, Lower x8 used for PCIe (Upper x8 reserved)
+	+ 2 x SD and eMMC Controller: supporting eMMC 5.1, SD 4.0, SDHOST 4.0 and SDIO 3.0
 	
   o Network
-	+ Ethernet: 1 x 1GbE
-	
-  o Memory & Storage
-	+ 64GB eMMC
-	+ 64MB NOR Boot Flash
-	+ 64GB 256-bit LPDDR5 DRAM
-	+ Video decode
-	+ Display: 1x 8K60 multi-mode DP 1.4a (+MST)
-	
+	+ Ethernet: Up to 10GBASE-T
+	+ Wireless: AW-CB375NF Dual-Band Wireless NIC
+				2.4G/5GHz Dual-Band WiFi 5, RTL8822CE-CG Core
+				Bluetooth 5.0, Supports BLE
+
+  o Storage
+	+ eMMC
+	+ NVMe card
+	+ SD card
+	+ USB host
+	+ USB otg
+
   o Multimedia
 	+ USB Camera
-    + Programmable Vision Accelerator v2.0
+	+ CSI Camera: 16 lanes (6, x2 or 4, x4) DPHY or CPHY
+	+ Display Port: Version DP v1.4a
+                    Supports MST and DSC
+                    Supports resolution Up to 8K60
+                    Supports 16 bpp YUV422, 18 bpp RGB, 24 bpp RGB/YUV444,30 bpp RGB/YUV444 and 36 bpp RGB/YUV444 format
+                    Supports 2-8 channel audio streaming up to 96 kHz sample rate
+                    Supports RBR, HBR, HBR2 and HBR3 bit rates
+    + High Definition Audio: Output from Display Port
+
+  o Power Mgmt
+	+ CPU hotplug
+	+ CPU Frequency
+	+ GPU Frequency
+	+ Memory Frequency
+	+ Four power modes
 
   o Misc Devices
-    + 2 x DLA - NVDLA v2.0
+    + GPIO
+    + HW Watchdog
+    + RTC
 
 3.2 Unsupported Features
 ========================
 
-The following features are not supported and not validated same as SDK.
+The following features are not supported and not validated:
 
-	x CAN
-	x I2S
 	x DMIC
 	x DSPK
-	x Ethernet: 1 x 10GbE
-	x D-PHY 2.1 (up to 40Gbps for 32GB Orin) | C-PHY 2.0 (up to 164Gbps for 64GB Orin)
-	x Gen 4.2 Video Imaging Compositor (VIC) 2D Engine
-	x CSI Camera: Up to 6 cameras (16 via virtual channels) 16 lanes MIPI CSI-2
+
 
 4. BSP Notes
 ============
@@ -83,17 +119,4 @@ eMMC, if used in a different environment it may run into unknown issues.
 	Processor:		Nvidia Jetson AGX Orin
 	Board:			Nvidia Jetson AGX Orin Developer kit
 	BootLoader:		Jetson UEFI firmware
-	BootLoader Version:	36.4.0
-
-
-Note: There is a issue with seamless display not working, where the
-    handoff from the initial kernel frame-buffer driver such as simplefb or
-    simple-drm to the main NVIDIA display driver does not work. 
-    This can be workaround by ...
-
-    *. Disabling display handoff in UEFI so that simplefb/simpledrm is not
-       used and just have the main display driver start the display.
-
-    There are more details in this forum thread:
-    https://forums.developer.nvidia.com/t/seamless-display-handoff-on-bring-your-own-kernel/328849
-
+	BootLoader Version:	36.4.3

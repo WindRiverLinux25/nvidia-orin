@@ -1,13 +1,19 @@
-Nvidia Jetson AGX Orin developer kit - Board Support Package
+		NVIDIA Jetson AGX Orin Series Board Support Package
+
 
 1. About this document
 ======================
+
 This document describes common and non-hardware specific information.
 Please refer to README.hardware for hardware specific information.
 
 Dependencies
 ------------
-This layer depends on meta-tegra.
+This layer depends on the following layers supplied with Wind River Linux:
+  oe-core
+  wr-kernel
+  meta-tegra
+  meta-tegra-community
 
 Maintenance
 -----------
@@ -15,14 +21,14 @@ This layer is maintained by Wind River Systems, Inc.
 Contact <support@windriver.com> or your support representative for more
 information on submitting changes.
 
-Building the Nvidia-orin layer
+Building the nvidia-orin layer
 ------------------------------
-This layer should be added to bblayers.conf. This
+This layer and its dependent layers should be added to bblayers.conf. This
 is done automatically when using the Wind River configure wrapper.
 
 License
 -------
-Copyright (C) 2024 Wind River Systems, Inc.
+Copyright (C) 2025 Wind River Systems, Inc.
 
 Source code included in the tree for individual recipes is under the LICENSE
 stated in the associated recipe (.bb file) unless otherwise stated.
@@ -47,6 +53,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
+
 2. BSP Kernel and Distros
 =========================
 
@@ -69,81 +76,1230 @@ by running 'bitbake -e virtual/kernel | grep "^TARGET_SUPPORTED_KTYPES="'.
 To get a list of patches applied to the kernel specific to this BSP along with
 patch descriptions use git-whatchanged on the default kernel. For example:
 
-        %> cd tmp-glibc/work-shared/<bsp_name>/kernel-source
-        %> git whatchanged <kernel_version>/standard/base..<kernel_version>/standard/<bsp_name>
+  $ cd tmp-glibc/work-shared/<bsp_name>/kernel-source
+  $ git whatchanged v6.12/standard/base..v6.12/standard/nvidia-sdk-5.15/nvidia-soc
 
 
 4. Build Instructions
 =====================
 
-# Download project for nvidia-orin
-$ ./wrlinux-x/setup.sh --dl-layers --machine nvidia-orin --distro wrlinux-graphics
+Because there are lots of packages under the NVIDIA Proprietary license, they are not
+able to be integrated into WRLinux product. Based on this reason, users need to build
+NVIDIA BSP with network enabled environment so that these NVIDIA Proprietary packages
+are able to be downloaded during building project.
 
-# Create a build
-$ . environment-setup-x86_64-wrlinuxsdk-linux
-$ . oe-init-build-env
+Note: If users want to integrate NVIDIA Proprietary package into their own product,
+      they MUST consult NVIDIA and their own legal department.
 
-# Enable CUSTOMER_RECIPES
-# WARNING: The following action will enable NVIDIA proprietary licenses recipes
-# and download NVIDIA proprietary sources, you must consult your legal
-# department before enable them for the build.
-#
-# Add the following lines conf/local.conf
-require conf/machine/include/nvidia-orin-proprietary-license-recipes.inc
+4.1 Setup BSP project with the following arguments
+--------------------------------------------------
+
+	For NVIDIA Orin AGX:
+	--machine nvidia-orin-agx --distro wrlinux-graphics --dl-layers --all-layers --accept-eula=yes
+
+4.2 Setup environment and create a build directory
+--------------------------------------------------
+
+	$ . environment-setup-x86_64-wrlinuxsdk-linux
+	$ . oe-init-build-env [<build>]
+
+4.3 Add below configurations at the end of local.conf
+-----------------------------------------------------
+
 BB_NO_NETWORK = '0'
+LICENSE_FLAGS_ACCEPTED += "commercial_faad2 commercial_x264 commercial"
+BUILD_NVIDIA_PROPRIETARY_PACKAGE = "1"
 
-# Build the image
-$ bitbake wrlinux-image-std
+CUSTOMER_RECIPES:meta-python += 'python3-kconfiglib'
+CUSTOMER_RECIPES:openembedded-layer += 'libglvnd'
+CUSTOMER_RECIPES:openembedded-layer += 'faad2'
+CUSTOMER_RECIPES:networking-layer += 'mosquitto'
+CUSTOMER_RECIPES:openembedded-layer += 'libwebsockets'
+CUSTOMER_RECIPES:openembedded-layer += 'uthash'
+CUSTOMER_RECIPES:meta-python += 'python3-smbus2'
 
-To build 'core-image-minimal/base/sato' with 'poky' distro, it additionally requires
-'pam' in DISTRO_FEATURES to help the build process.
-Edit conf/local.conf to use:
-$ echo 'DISTRO_FEATURES:append = " pam"' >> conf/local.conf
+CUSTOMER_RECIPES:tegra += 'tegra-flashtools'
+CUSTOMER_RECIPES:tegra += 'tegra-bootfiles'
+CUSTOMER_RECIPES:tegra += 'tegra-minimal-initramfs'
+CUSTOMER_RECIPES:tegra += 'tegra-espimage'
+CUSTOMER_RECIPES:tegra += 'edk2-firmware-tegra'
+CUSTOMER_RECIPES:tegra += 'tegra-tools'
+CUSTOMER_RECIPES:tegra += 'nvidia-kernel-oot-dtb'
+CUSTOMER_RECIPES:tegra += 'nvidia-kernel-oot'
+CUSTOMER_RECIPES:tegra += 'edk2-firmware-tegra-minimal'
+CUSTOMER_RECIPES:tegra += 'tegra-initrd-flash-initramfs'
+CUSTOMER_RECIPES:tegra += 'tos-optee'
+CUSTOMER_RECIPES:tegra += 'cuda-samples'
+CUSTOMER_RECIPES:tegra += 'argus-samples'
+CUSTOMER_RECIPES:tegra += 'l4t-graphics-demos'
+CUSTOMER_RECIPES:tegra += 'nvgstapps'
+CUSTOMER_RECIPES:tegra += 'cudnn-samples'
+CUSTOMER_RECIPES:tegra += 'nvidia-docker'
+CUSTOMER_RECIPES:tegra += 'optee-nvsamples'
+CUSTOMER_RECIPES:tegra += 'optee-test'
+CUSTOMER_RECIPES:tegra += 'optee-client'
+CUSTOMER_RECIPES:tegra += 'nativesdk-packagegroup-cuda-sdk-host'
+CUSTOMER_RECIPES:tegra += 'tegra-firmware'
+CUSTOMER_RECIPES:tegra += 'tegra-minimal-init'
+CUSTOMER_RECIPES:tegra += 'tegra-flash-init'
+CUSTOMER_RECIPES:tegra += 'l4t-launcher-extlinux'
+CUSTOMER_RECIPES:tegra += 'libgcc-for-nvcc'
+CUSTOMER_RECIPES:tegra += 'gcc-for-nvcc-runtime'
+CUSTOMER_RECIPES:tegra += 'tegra-nvfancontrol'
+CUSTOMER_RECIPES:tegra += 'tegra-helper-scripts'
+CUSTOMER_RECIPES:tegra += 'tegra-flashvars'
+CUSTOMER_RECIPES:tegra += 'tegra-binaries'
+CUSTOMER_RECIPES:tegra += 'tegra-eks-image'
+CUSTOMER_RECIPES:tegra += 'tegra-storage-layout'
+CUSTOMER_RECIPES:tegra += 'optee-os'
+CUSTOMER_RECIPES:tegra += 'arm-trusted-firmware'
+CUSTOMER_RECIPES:tegra += 'tar-l4t-workaround-native'
+CUSTOMER_RECIPES:tegra += 'cuda-profiler-api'
+CUSTOMER_RECIPES:tegra += 'cuda-cudart'
+CUSTOMER_RECIPES:tegra += 'cuda-compatibility-workarounds'
+CUSTOMER_RECIPES:tegra += 'cuda-crt'
+CUSTOMER_RECIPES:tegra += 'gcc-for-nvcc-cross-aarch64'
+CUSTOMER_RECIPES:tegra += 'gcc-for-nvcc'
+CUSTOMER_RECIPES:tegra += 'cuda-compiler'
+CUSTOMER_RECIPES:tegra += 'cuda-libraries'
+CUSTOMER_RECIPES:tegra += 'tegra-mmapi'
+CUSTOMER_RECIPES:tegra += 'tegra-cmake-overrides'
+CUSTOMER_RECIPES:tegra += 'tegra-libraries-multimedia-utils'
+CUSTOMER_RECIPES:tegra += 'tegra-drm-headers'
+CUSTOMER_RECIPES:tegra += 'cudnn'
+CUSTOMER_RECIPES:tegra += 'standalone-mm-optee-tegra'
+CUSTOMER_RECIPES:tegra += 'optee-os-tadevkit'
+CUSTOMER_RECIPES:tegra += 'tegra-libraries-nvdsseimeta'
+CUSTOMER_RECIPES:tegra += 'tegra-libraries-multimedia'
+CUSTOMER_RECIPES:tegra += 'libgstnvcustomhelper'
+CUSTOMER_RECIPES:tegra += 'tegra-wifi'
+CUSTOMER_RECIPES:tegra += 'tegra-nvstartup'
+CUSTOMER_RECIPES:tegra += 'tegra-bluetooth'
+CUSTOMER_RECIPES:tegra += 'tegra-nvsciipc'
+CUSTOMER_RECIPES:tegra += 'tegra-nvphs'
+CUSTOMER_RECIPES:tegra += 'tegra-nvs-service'
+CUSTOMER_RECIPES:tegra += 'tegra-configs'
+CUSTOMER_RECIPES:tegra += 'tegra-redundant-boot'
+CUSTOMER_RECIPES:tegra += 'tegra-redundant-boot-base'
+CUSTOMER_RECIPES:tegra += 'tegra-libraries-cuda'
+CUSTOMER_RECIPES:tegra += 'gstreamer1.0-plugins-nvvideosinks'
+CUSTOMER_RECIPES:tegra += 'gstreamer1.0-plugins-nvvidconv'
+CUSTOMER_RECIPES:tegra += 'gstreamer1.0-plugins-nvdrmvideosink'
+CUSTOMER_RECIPES:tegra += 'gstreamer1.0-plugins-nvarguscamerasrc'
+CUSTOMER_RECIPES:tegra += 'gstreamer1.0-plugins-nvcompositor'
+CUSTOMER_RECIPES:tegra += 'gstreamer1.0-plugins-nveglgles'
+CUSTOMER_RECIPES:tegra += 'gstreamer1.0-plugins-nvipcpipeline'
+CUSTOMER_RECIPES:tegra += 'gstreamer1.0-plugins-nvjpeg'
+CUSTOMER_RECIPES:tegra += 'gstreamer1.0-plugins-nvtee'
+CUSTOMER_RECIPES:tegra += 'gstreamer1.0-plugins-nvunixfd'
+CUSTOMER_RECIPES:tegra += 'gstreamer1.0-plugins-nvv4l2camerasrc'
+CUSTOMER_RECIPES:tegra += 'gstreamer1.0-plugins-nvvideo4linux2'
+CUSTOMER_RECIPES:tegra += 'gstreamer1.0-plugins-tegra'
+CUSTOMER_RECIPES:tegra += 'gstreamer1.0-plugins-tegra-binaryonly'
+CUSTOMER_RECIPES:tegra += 'tensorrt-trtexec'
+CUSTOMER_RECIPES:tegra += 'tensorrt-samples'
+CUSTOMER_RECIPES:tegra += 'tegra-mmapi-samples'
+CUSTOMER_RECIPES:tegra += 'libcublas'
+CUSTOMER_RECIPES:tegra += 'nv-tegra-release'
+CUSTOMER_RECIPES:tegra += 'tegra-nvpmodel'
+CUSTOMER_RECIPES:tegra += 'nvidia-container-toolkit'
+CUSTOMER_RECIPES:tegra += 'tegra-libraries-multimedia-v4l'
+CUSTOMER_RECIPES:tegra += 'gcc-for-nvcc-cross-canadian-aarch64'
+CUSTOMER_RECIPES:tegra += 'libusbgx-tegra-initrd-flash'
+CUSTOMER_RECIPES:tegra += 'tegra-flash-reboot'
+CUSTOMER_RECIPES:tegra += 'cuda-cuobjdump'
+CUSTOMER_RECIPES:tegra += 'cuda-nvcc'
+CUSTOMER_RECIPES:tegra += 'tegra-storage-layout-base'
+CUSTOMER_RECIPES:tegra += 'tegra-nvpower'
+CUSTOMER_RECIPES:tegra += 'tegra-nvpmodel-base'
+CUSTOMER_RECIPES:tegra += 'tegra-eks-image-base'
+CUSTOMER_RECIPES:tegra += 'tegra-configs-alsa'
+CUSTOMER_RECIPES:tegra += 'cuda-cccl'
+CUSTOMER_RECIPES:tegra += 'cuda-cuxxfilt'
+CUSTOMER_RECIPES:tegra += 'cuda-driver'
+CUSTOMER_RECIPES:tegra += 'cuda-nvcc-headers'
+CUSTOMER_RECIPES:tegra += 'cuda-nvprune'
+CUSTOMER_RECIPES:tegra += 'cuda-nvvm'
+CUSTOMER_RECIPES:tegra += 'libnvjitlink'
+CUSTOMER_RECIPES:tegra += 'libnvvpi3'
+CUSTOMER_RECIPES:tegra += 'libcusolver'
+CUSTOMER_RECIPES:tegra += 'libcurand'
+CUSTOMER_RECIPES:tegra += 'libcudla'
+CUSTOMER_RECIPES:tegra += 'libcufft'
+CUSTOMER_RECIPES:tegra += 'libcusparse'
+CUSTOMER_RECIPES:tegra += 'libcufile'
+CUSTOMER_RECIPES:tegra += 'cuda-nvml'
+CUSTOMER_RECIPES:tegra += 'cuda-nvrtc'
+CUSTOMER_RECIPES:tegra += 'cuda-target-environment'
+CUSTOMER_RECIPES:tegra += 'libnpp'
+CUSTOMER_RECIPES:tegra += 'l4t-nvidia-glheaders'
+CUSTOMER_RECIPES:tegra += 'l4t-graphics-demos'
+CUSTOMER_RECIPES:tegra += 'tegra-libraries-glescore'
+CUSTOMER_RECIPES:tegra += 'tegra-argus-daemon'
+CUSTOMER_RECIPES:tegra += 'tegra-eeprom-tool'
+CUSTOMER_RECIPES:tegra += 'tegra-libraries-camera'
+CUSTOMER_RECIPES:tegra += 'tegra-libraries-core'
+CUSTOMER_RECIPES:tegra += 'tegra-libraries-dla-compiler'
+CUSTOMER_RECIPES:tegra += 'tegra-libraries-eglcore'
+CUSTOMER_RECIPES:tegra += 'tegra-libraries-gbm-backend'
+CUSTOMER_RECIPES:tegra += 'tegra-libraries-glxcore'
+CUSTOMER_RECIPES:tegra += 'tegra-libraries-multimedia-ds'
+CUSTOMER_RECIPES:tegra += 'tegra-libraries-nvml'
+CUSTOMER_RECIPES:tegra += 'tegra-libraries-nvsci'
+CUSTOMER_RECIPES:tegra += 'tegra-libraries-pva'
+CUSTOMER_RECIPES:tegra += 'egl-wayland'
+CUSTOMER_RECIPES:tegra += 'nvidia-drm-loadconf'
+CUSTOMER_RECIPES:tegra += 'egl-gbm'
+CUSTOMER_RECIPES:tegra += 'tegra-nvs-base'
+CUSTOMER_RECIPES:tegra += 'tegra-nvsciipc-base'
+CUSTOMER_RECIPES:tegra += 'tegra-nvphs-base'
+CUSTOMER_RECIPES:tegra += 'tegra-cuda-utils'
+CUSTOMER_RECIPES:tegra += 'tegra-container-passthrough'
+CUSTOMER_RECIPES:tegra += 'libnvidia-container'
+CUSTOMER_RECIPES:tegra += 'xserver-xorg-video-nvidia'
+CUSTOMER_RECIPES:tegra += 'nativesdk-cuda-environment'
+CUSTOMER_RECIPES:tegra += 'tegra-nv-boot-control-config'
+CUSTOMER_RECIPES:tegra += 'setup-nv-boot-control'
+CUSTOMER_RECIPES:tegra += 'tensorrt-plugins'
+CUSTOMER_RECIPES:tegra += 'tensorrt-core'
+CUSTOMER_RECIPES:tegra += 'eglexternalplatform'
+CUSTOMER_RECIPES:tegra += 'cupva'
+CUSTOMER_RECIPES:tegra += 'gcc-source-for-nvcc-10.3.0'
+CUSTOMER_RECIPES:tegra += 'libnvfatbin'
+CUSTOMER_RECIPES:tegra += 'l4t-launcher-rootfs-ab-config'
 
-5. Boot Instructions
+CUSTOMER_RECIPES:tegra-community += 'gstreamer-tests'
+CUSTOMER_RECIPES:tegra-community += 'tegra-mmapi-tests'
+CUSTOMER_RECIPES:tegra-community += 'vpi3-tests'
+CUSTOMER_RECIPES:tegra-community += 'tensorrt-tests'
+CUSTOMER_RECIPES:tegra-community += 'deepstream-tests'
+CUSTOMER_RECIPES:tegra-community += 'python3-jetson-stats'
+CUSTOMER_RECIPES:tegra-community += 'nvidia-docker-tests'
+CUSTOMER_RECIPES:tegra-community += 'vpi3-samples'
+CUSTOMER_RECIPES:tegra-community += 'deepstream-7.1-pyds'
+CUSTOMER_RECIPES:tegra-community += 'deepstream-7.1'
+CUSTOMER_RECIPES:tegra-community += 'python3-cuda'
+CUSTOMER_RECIPES:tegra-community += 'openssl111'
+CUSTOMER_RECIPES:tegra-community += 'yaml-cpp-070'
+CUSTOMER_RECIPES:tegra-community += 'python3-pyclibrary'
+
+4.4 Build project with below command
+------------------------------------
+
+	bitbake wrlinux-image-std-sato
+
+After building project completely, there is a compressed package as below:
+<project path>/build/tmp/deploy/images/<MACHINE>/wrlinux-image-std-sato-<MACHINE>.rootfs.tegraflash.tar.zst
+It will be used to NVIDIA Orin platform in later.
+
+
+5. Deploy Instructions
+======================
+
+5.1 Create Deploying Environment
+--------------------------------
+
+	Create deploying environment with below commands:
+
+	$ mkdir nvidia-deploy
+	$ cp <build output path>/wrlinux-image-std-sato-<MACHINE>.rootfs.tegraflash.tar.zst nvidia-deploy
+	$ cd nvidia-deploy
+	$ sudo tar --zstd -xvf wrlinux-image-std-sato-<MACHINE>.rootfs.tegraflash.tar.zst
+
+5.2 Connect NVIDIA Orin Board with Host
+---------------------------------------
+
+Assume that the host system is Ubuntu.
+
+For NVIDIA Orin AGX board:
+Get the high quality USB Type-C cable shipped with NVIDIA Orin development kit, connect the
+USB Type-C end to J40 of NVIDIA Orin AGX board, connect another end to PC host.
+
+5.3 Force Board into Recovery Mode
+----------------------------------
+
+For NVIDIA Orin AGX board:
+
+<1> Power off NVIDIA Orin AGX board by turning off power supply
+
+<2> Press and hold down the Force Recovery button(S3), and then power on board by turning on power supply.
+
+<3> (Optional) If the white LED(DS2) is not lit, press the Power button(S1).
+
+<4> Release both buttons.
+
+<5> Run below command on host to check whether NVIDIA Orin board enters into recovery mode successfully.
+
+    # lsusb
+    ......
+    Bus 003 Device 006: ID 0955:7023 NVIDIA Corp. APX
+    ......
+
+    If the host PC detect above device, it indicates that NVIDIA Orin board enters into recovery mode successfully.
+
+5.4 Burn images into NVIDIA Orin board
+--------------------------------------
+
+For NVIDIA Orin AGX board:
+
+    Burn images into eMMC with below commands:
+
+    # cd nvidia-deploy
+    # sudo ./doflash.sh
+
+    After burning completely, there will be output as below:
+
+    ......
+    [ 269.0302 ] Flashing completed
+    [ 269.0302 ] Coldbooting the device
+    [ 269.0307 ] tegrarcm_v2 --chip 0x23 0 --ismb2
+    [ 269.0312 ] MB2 version 01.00.0000
+    [ 269.0330 ] Coldbooting the device
+    [ 269.0334 ] tegrarcm_v2 --chip 0x23 0 --reboot coldboot
+    [ 269.0338 ] MB2 version 01.00.0000
+
+Note: Burning time is about 20 minutes, if burning action failed, please repeat the steps in section 5.3 and 5.4.
+
+
+6. Boot Instructions
 ====================
 
-5.1 Updating images in eMMC flash
-=================================
-This section provides details about how to update a new Nvidia Jetson AGX Orin
-developer kit board with the latest image into it.
-More details about hardware configuration & software details can be obtained
-from below Nvidia website
+6.1 Boot from storage device
+----------------------------
 
-https://www.nvidia.com/en-in/autonomous-machines/embedded-systems/jetson-orin/
-Jetson AGX Orin Developer Kit | Nvidia
+6.1.1 Boot from internal eMMC
+-----------------------------
 
-5.1.1 Nvidia Jetson AGX Orin board port connectivity
-====================================================
+1) Connect cables and external devices to NVIDIA Orin AGX board
 
-	First, connect the following to the developer kit;
-	* DisplayPort cable attached to a computer monitor
-	* For a monitor with HDMI input, use an active DisplayPort to HDMI adapter/cable.
-	* USB keyboard and mouse
-	* Ethernet cable (optional if you plan to connect to the Internet via WLAN)
-	* Then connect the included power supply into the USB Type-C port above the DC jack
-	* connet the USB-C type (near to 40-pin expander) to host machine for image upgrade purpose
-	  connet the debug console port USB-A type (near to DP port) to host machine
-	* Your developer kit should automatically power on, and the white LED near
-          the power button will light. If not, press the Power button.
-	* open the debug console port from host machine 'sudo minicom -D /dev/ttyACM0 -8 -b 115200'
-	* Wait up to few mins to have the Linux prompt on the debug console port
+   For NVIDIA Orin AGX board:
+   - Connect USB Type-C power supply with J24 of NVIDIA Orin AGX board.
+   - Connect ethernet cable with J17 of NVIDIA Orin AGX board.
+   - Connect DP monitor with J18 of NVIDIA Orin AGX board.
+   - (Optional)Connect USB mouse and keyboard with J33 of NVIDIA Orin AGX board.
 
-5.1.2 Updating Nvidia Jetson AGX Orin with latest image
-=======================================================
-	a) Open a debug console on the Host PC, login with Ubuntu/WR linux default credentials provided.
-	 	Wind River Linux Graphics LTS 24.33 Update 9 nvidia-orin ttyTCU0
-		nvidia-orin login: root
+2) Turn on the power supply
 
-	b) Run the below command to boot the board into recovery mode
-		root@nvidia-orin:~# reboot --force forced-recovery
-		
-	c) After running the above step, goto host machine where the USB Type C cable is connected
-		* copy the boot image from the build machine to host machine into a specific path
-		* untar the boot image using below command
-			tar -xvf wrlinux-image-std-nvidia-orin.tegraflash.tar.gz
-		* Execute the below command with sudo permission to start the image upgrade
-			sudo ./doflash
-		* Wait until the above command is executed. The Nvidia board will go for reboot
-                  automatically after the upgrade.
-		* Now the Nvidia target board shall be booted with the updated image.
+3) Setup debug console
+   - Check the debug serial port on host PC
+     $ ls /dev/ttyACM*
+     ttyACM0
+     ttyACM1
+     ttyACM2
+     ttyACM3
+     If there are 4 ttyACM* device nodes listed, it indicate host PC detects the debug serial port.
+
+   - Setup debug serial port with below command:
+     $ sudo minicom -s
+     Enter the menu item of serial port setup, set the Serial Device as /dev/ttyACM0, and keep other
+     configurations as default value.
+
+4) Login WRLinux system
+   <MACHINE> login: root
+   root@<MACHINE>:~# uname -a
+   Linux <MACHINE> 6.12.33-yocto-standard #1 SMP PREEMPT Fri Jun 20 01:52:55 UTC 2025 aarch64 GNU/Linux
+
+6.2 Boot From Network
+---------------------
+
+Precondition 1: In order to boot from network environment, there must be a common DHCP server and setup
+                tftp server and nfs server on their host PC.
+
+Precondition 2: Only for NVIDIA Orin AGX platform, AGX Orin 64GB-DRAM core module(P3701-0005)+AGX Orin reference carrier board(P3737-0000).
+                Because on NVIDIA Orin AGX platform(p3737-0000+p3701-0005), the UEFI firmware is not able to detect the on-board ethernet
+                card, it needs to attach an USB-to-Ethernet converter to board.
+
+
+6.2.1 Boot from tftp server
+---------------------------
+
+1) Deploy images on tftp server
+
+   Copy <project path>/build/tmp/deploy/images/<MACHINE>/Image into boot directory of tftp server.
+   Copy <project path>/build/tmp/deploy/images/<MACHINE>/devicetree/tegra234-p3737-0000+p3701-0005-nv-bootable.dtb
+   into directory of tftp server.
+
+2) Deploy rootfs on nfs server
+
+   Copy <project path>/build/tmp/deploy/images/<MACHINE>/wrlinux-image-std-sato-nvidia-orin-agx.rootfs.tar.bz2
+   into rootfs directory of nfs server.
+   Decompress it with below command:
+   tar jxvf wrlinux-image-std-sato-nvidia-orin-agx.rootfs.tar.bz2
+
+3) Enter UEFI shell environment
+
+   Power on board, and then press 'ESC' key continuously to enter setup menu when debug serial port outputs below content.
+   **********************************************************************
+   Jetson System firmware version v36.4.3 date 2023-08-09T14:18:37+00:00
+   ESC   to enter Setup.
+   F11   to enter Boot Manager Menu.
+   Enter to continue boot.
+   **********************************************************************
+   Enter 'Boot Manager' menu, and then select 'UEFI Shell' item.
+   Enter boot partition with below command:
+   Shell> ver
+   UEFI Interactive Shell v2.2
+   EDK II
+   UEFI v2.70 (EDK II, 0x00010000)
+
+4) Download images from tftp server
+
+   Enter boot partition with below command:
+
+   For NVIDIA Orin AGX Board:
+   Shell> fs3:
+   FS3:\> ls
+   Directory of: FS3:\
+   04/05/2011  23:00 <DIR>           512  EFI
+             0 File(s)           0 bytes
+             1 Dir(s)
+
+   Note: If users install SD or NVME card on board, the partition number will change.
+
+   Apply for IP address with below command:
+   FS3:\> ifconfig -s eth0 dhcp
+   FS3:\> ifconfig -l
+
+   -----------------------------------------------------------------
+
+   name         : eth0
+   Media State  : Media present
+   policy       : dhcp
+   mac addr     : 00:E0:4C:68:3C:10
+
+   ipv4 address : 192.168.3.110
+
+   subnet mask  : 255.255.255.0
+
+   default gateway: 192.168.3.1
+
+     Routes (2 entries):
+       Entry[0]
+        Subnet : 192.168.3.0
+        Netmask: 255.255.255.0
+        Gateway: 0.0.0.0
+       Entry[1]
+       Subnet : 0.0.0.0
+        Netmask: 0.0.0.0
+        Gateway: 192.168.3.1
+
+   DNS server   :
+        192.168.3.1
+
+   Download images with below command:
+   FS3:\> tftp <tftp server ip> <tftp boot directory>/tegra234-p3737-0000+p3701-0005-nv-bootable.dtb
+   FS3:\> tftp <tftp server ip> <tftp boot directory>/Image
+
+5) Boot system with NFS
+
+   After downloading images from tftp server, boot system with below command:
+
+   For NVIDIA Orin AGX platform:
+   FS3:\> Image mminit_loglevel=4 console=ttyTCU0,115200 console=ttyAMA0,115200 firmware_class.path=/etc/firmware \
+            fbcon=map:0 nospectre_bhb video=efifb:off console=tty0 root=/dev/nfs rw \
+            nfsroot=<nfs server ip>:<nfs root path>,v3,tcp ip=dhcp bl_prof_dataptr=2031616@0x102C610000 \
+            bl_prof_ro_ptr=65536@0x102C600000 dtb=./tegra234-p3737-0000+p3701-0005-nv-bootable.dtb
+
+6.2.2 Boot from PXE server
+--------------------------
+
+About PXE boot mode, there is detailed descriptions on NVIDIA official documents, please refer to below link:
+https://docs.nvidia.com/jetson/archives/r36.4.3/DeveloperGuide/SD/FlashingSupport.html#configuring-a-pxe-boot-server-for-uefi-bootloader-on-jetson
+https://elinux.org/Jetson/L4T/peripheral/#PXE_boot
+
+
+7. Features
+===========
+
+7.1 Power and Performance
+-------------------------
+
+7.1.1 Statistics Tool
+---------------------
+
+During development phase, it often needs to measure CPU, GPU, and memory usage status, so that make sure that SoC is able to support for
+all the applications running on NVIDIA Orin platform. So, NVIDIA provides the statistics tool to show important metrics of Orin platform.
+
+The "tegrastats" command is a tool that reports memory usage, GPU usage, CPU usage, and SOC temperature for NVIDIA Orin platform.
+Run this command, It will start printing the system statistics each second. If users need to customize the tegrastats behavior, it provides
+the following command-line options:
+
+root@nvidia-orin-agx:~# tegrastats --help
+Usage: tegrastats [-option]
+Options:
+    --help                    : print this help screen
+    --interval <millisec>     : sample the information in <milliseconds>
+    --cpu_per_socket <numcpu> : display only the top <numcpu> by utilization per socket (default=6)
+                                applicable only for socket-based systems
+    --logfile  <filename>     : dump the output of tegrastats to <filename>
+    --load_cfg <filename>     : load the information from <filename>
+    --readall                 : collect all stats including performance intensive stats
+    --save_cfg <filename>     : save the information to <filename>
+    --start                 : run tegrastats as a daemon process in the background
+    --stop                    : stop any running instances of tegrastats
+    --verbose                 : print verbose message
+
+There is an example of output printed by tegrastats running on Orin AGX platform.
+
+07-04-2025 11:05:02  RAM 4000/62846MB (lfb 14352x4MB) CPU [12%@1497,4%@1497,100%@1497,0%@1497,0%@1497,0%@1497,0%@1497,0%@1497,0%@1497,0%@1497,7%@1497,0%@1497]
+EMC_FREQ 6%@2133 GR3D_FREQ 29%@[815,815] NVENC off NVDEC 40%@115 NVJPG off NVJPG1 off VIC 56%@115 OFA off NVDLA0 off NVDLA1 off PVA0_FREQ off APE 174
+cpu@51.843C soc2@48.562C soc0@49.031C gpu@49.187C tj@51.843C soc1@48.062C VDD_GPU_SOC 5187mW/5187mW VDD_CPU_CV 1596mW/1596mW VIN_SYS_5V0 4456mW/4476mW
+
+
+Below description helps users to interpret some of the metrics provided by tegrastats.
+
+Statistic                                   Description
+RAM 4000/62846MB (lfb 15415x4MB)            4000 MB of RAM are in use, 62846MB MB of RAM is available for applications and there are 15415 blocks of size 4 MB
+                                            the largest free block size) that can be allocated.
+CPU [12%@1497,...,0%@1497]                  Each A@B value is a statistic for one of the CPUs. The first CPU in the example has a load of 12% and is running at 1497 MHz.
+                                            The CPU load can also show as off if it's powered down.
+EMC_FREQ 6%@2133                            6% of the External Memory Controller bandwidth is used, and it's running at 2133 MHz.
+GR3D_FREQ 29%@[815,815]                     The first GPU engine has 29% of usage and is running at 815 MHz.
+NVENC off                                   The NVIDIA Video Encoder Engine is in off status.
+NVDEC 40%@115                               The NVIDIA Video Decoder Engine has 40% of usage and is running at 115 MHz, .
+NVJPG off                                   The first NVIDIA JPEG Engine is in off status.
+NVJPG1 off                                  The second NVIDIA JPEG Engine is in off status.
+VIC 56%@115                                 The video image compositor has a 56% load and is running at 115 MHz.
+OFA off                                     The Optical Flow Accelerator is in off status.
+NVDLA0 off                                  The Deep Learning Accelerator 0 is in off status.
+NVDLA1 off                                  The Deep Learning Accelerator 1 is in off status.
+PVA0_FREQ off                               The Programmable Vision Accelerator is in off status.
+APE 174                                     The Audio Processing Engine is running at 174 MHz.
+cpu@51.843C                                 CPU with a temperature of 51.843 Celsius degrees.
+gpu@49.187C                                 GPU with a temperature of 49.187 Celsius degrees.
+VDD_GPU_SOC 5187mW/5187mW                   GPU SOC current power consumption is 5187 mW and the average power consumption is 5187 mW
+
+7.1.2 Power Efficiency
+----------------------
+
+<1> Orin series module power mode
+
+The Orin series module supports four different power modes known as 15W, 30W, and 50W.
+For each mode, several configurations with various CPU and GPU frequencies, and a number of cores online are enabled.
+Detailed configuration Orin AGX 64GB module as below:
+
+Mode ID                            0               1               2               3
+Power Budget                       EDP             15W             30W             50W
+Online CPU                         12              4               8               12
+CPU Max Frequency (MHz)            2201.6          1113.6          1728            1497.6
+GPU TPC	                           8               3               4               6
+GPU Max Frequency (MHz)            1301            408             612             816
+DLA cores                          2               2               2               2
+DLA Core Max Frequency (MHz)       1600            614.4           1369.6          1369.6
+DLA Falcon Max frequency (MHz)     844.8           294.4           729.6           729.6
+PVA Cores                          2               1               1               1
+PVA VPS Max frequency (MHz)        1369.6          307.2           512             704
+PVA AXI Max frequency (MHz)        985.6           217.6           358.4           486.4
+Memory Max frequency (MHz)         3200            2133            3200            3200
+
+The default mode is id 2, and Power Budget is 30W.
+The EDP represents the upper limitation of Orin series module, so it has no power budget.
+
+<2> Check current power mode
+
+If users want to check the current power mode, please run below command:
+
+root@nvidia-orin-agx:~# /usr/sbin/nvpmodel -q
+NV Power Mode: MODE_30W
+2
+
+<2> Change power mode
+
+If users want to change mode of Orin series module, please run below command:
+For example, change into mode 0.
+
+root@nvidia-orin-agx:~# /usr/sbin/nvpmodel -m 0
+NVPM WARN: Golden image context is already created
+NVPM WARN: Reboot required for changing to this power mode: 0
+NVPM WARN: DO YOU WANT TO REBOOT NOW? enter YES/yes to confirm:
+yes
+NVPM WARN: rebooting..
+
+Note: The mode persists across power cycles and won't change unless nvpmodel is called again.
+
+7.1.3 Manage CPU State
+----------------------
+
+<1> List CPUs
+
+The Orin platform always boot from one CPU denominated the master CPU which cannot be turned off. All other CPUs can be turned off.
+For example, the CPUs are listed in the directory /sys/devices/system/cpu/ of Orin AGX platform as below:
+
+root@nvidia-orin-agx:~# ls -v /sys/devices/system/cpu | grep cpu[0-9]
+cpu0
+cpu1
+cpu2
+cpu3
+cpu4
+cpu5
+cpu6
+cpu7
+cpu8
+cpu9
+cpu10
+cpu11
+
+<2> Check the state of a CPU
+
+root@nvidia-orin-agx:~# cat /sys/devices/system/cpu/cpu0/online
+1
+
+<3> Turn on a CPU
+
+root@nvidia-orin-agx:~# echo 1 > /sys/devices/system/cpu/cpu8/online
+Detected PIPT I-cache on CPU8
+GICv3: CPU8: found redistributor 20000 region 0:0x000000000f540000
+CPU8: Booted secondary processor 0x0000020000 [0x410fd421]
+
+<4> Turn off a CPU
+
+root@nvidia-orin-agx:~# echo 0 > /sys/devices/system/cpu/cpu8/online
+psci: CPU8 killed (polled 0 ms)
+
+
+7.1.4 Change CPU Frequency
+--------------------------
+
+<1> To show the CPU lower boundary, upper boundary, and current frequency with below commands:
+
+root@nvidia-orin-agx:~# cat /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_min_freq
+115200
+root@nvidia-orin-agx:~# cat /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_max_freq
+2201600
+root@nvidia-orin-agx:~# cat /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_cur_freq
+729600
+
+<2> Get the available frequencies with below commands:
+
+root@nvidia-orin-agx:~# cat /sys/devices/system/cpu/cpu1/cpufreq/scaling_available_frequencies
+115200 192000 268800 345600 422400 499200 576000 652800 729600 806400 883200 960000 1036800 1113600 1190400 1267200 1344000
+1420800 1497600 1574400 1651200 1728000 1804800 1881600 1958400 2035200 2112000 2188800 2201600
+
+<3> To change the CPU upper boundary with below commands:
+
+root@nvidia-orin-agx:~# echo 2112000 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq
+
+<4> To change the CPU lower boundary with below commands:
+
+root@nvidia-orin-agx:~# echo 192000 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
+
+<5> To set the static CPU frequency with below commands:
+
+root@nvidia-orin-agx:~# echo 2201600 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
+root@nvidia-orin-agx:~# echo 2201600 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq
+
+7.1.5 Manage GPU Frequency Scaling
+----------------------------------
+
+3D frequency scaling capability allows the NVIDIA Orin platform to change the GPU frequency according to
+the load in order to reduce power consumption, 3D frequency scaling is enabled by default.
+
+<1> To disable 3D frequency scaling with below command:
+
+root@nvidia-orin-agx:~# echo 0 > /sys/devices/platform/bus@0/17000000.gpu/enable_3d_scaling
+
+<2> To enable 3D frequency scaling run the following command:
+
+root@nvidia-orin-agx:~# echo 1 > /sys/devices/platform/bus@0/17000000.gpu/enable_3d_scaling
+
+7.1.6 Change GPU Frequency
+--------------------------
+
+<1> To show the GPU lower boundary, upper boundary, and current frequency with below commands:
+
+root@nvidia-orin-agx:~# cat /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/min_freq
+306000000
+root@nvidia-orin-agx:~# cat /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/cur_freq
+306000000
+root@nvidia-orin-agx:~# cat /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/max_freq
+1300500000
+
+<2> Get the available frequencies with below commands:
+
+root@nvidia-orin-agx:~# cat /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/available_frequencies
+306000000 408000000 510000000 612000000 714000000 816000000 918000000 1020000000 1122000000 1224000000 1300500000
+
+<3> To change the GPU upper boundary with below commands:
+
+root@nvidia-orin-agx:~# echo 1224000000 > /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/max_freq
+
+<4> To change the GPU lower boundary with below commands:
+
+root@nvidia-orin-agx:~# echo 408000000 > /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/min_freq
+
+<5> To set the static GPU frequency with below commands:
+
+root@nvidia-orin-agx:~# echo 1224000000 > /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/min_freq
+root@nvidia-orin-agx:~# echo 1224000000 > /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/max_freq
+
+7.1.7 Change Memory Frequency
+-----------------------------
+
+<1> To show the EMC lower boundary, upper boundary, and current frequency with below commands:
+
+root@nvidia-orin-agx:~# cat /sys/kernel/debug/bpmp/debug/clk/emc/max_rate
+3199000000
+root@nvidia-orin-agx:~# cat /sys/kernel/debug/bpmp/debug/clk/emc/min_rate
+204000000
+root@nvidia-orin-agx:~# cat /sys/kernel/debug/bpmp/debug/clk/emc/rate
+2133000000
+
+<2> Get the available frequencies with below commands:
+
+root@nvidia-orin-agx:~# ls /sys/kernel/debug/bpmp/debug/emc/tables/regular/
+204000  2133000  3199000  665600
+
+<3> To set static EMC frequency with below commands:
+
+root@nvidia-orin-agx:~# echo 1 > /sys/kernel/debug/bpmp/debug/clk/emc/mrq_rate_locked
+root@nvidia-orin-agx:~# echo 1 > /sys/kernel/debug/bpmp/debug/bwmgr/bwmgr_halt
+root@nvidia-orin-agx:~# echo 2133000000 > /sys/kernel/debug/bpmp/debug/clk/emc/rate
+
+7.1.8 Jetson Clocks Tool
+------------------------
+
+NVIDIA provides the jetson_clocks.sh script to maximize Orin module performance by setting static max frequency to CPU, GPU, and EMC clocks.
+The script can also be used to show current clock settings, store current clock settings into a file, and restore clock settings from a file.
+
+root@nvidia-orin-agx:~# jetson_clocks --help
+Maximize jetson performance by setting static max frequency to CPU, GPU and EMC clocks.
+Usage:
+jetson_clocks [options]
+  options,
+  --help, -h         show this help message
+  --show             display current settings
+  --fan              set PWM fan speed to maximal
+  --store [file]     store current settings to a file (default: ${HOME}/l4t_dfs.conf)
+  --restore [file]   restore saved settings from a file (default: ${HOME}/l4t_dfs.conf)
+  run jetson_clocks without any option to set static max frequency to CPU, GPU and EMC clocks.
+
+<1> To show the current settings with below commands:
+
+root@nvidia-orin-agx:~# jetson_clocks --show
+
+<2> To store the current settings with below commands:
+
+root@nvidia-orin-agx:~# jetson_clocks --store
+
+<3> To maximize performance with below commands:
+
+root@nvidia-orin-agx:~# jetson_clocks
+
+<4> To restore the previous settings with below commands:
+
+root@nvidia-orin-agx:~# jetson_clocks --restore
+
+7.2 System Monitoring Tool
+--------------------------
+
+JTOP is a system monitoring tool specifically designed for NVIDIA Orin platform. It provides real-time information about
+the platform's resource usage, including CPU, GPU, memory, disk, fan and engine. It also displays hardware temperatures, power consumption and frequency.
+JTOP is a user-friendly command-line tool that helps users understand and optimize the performance of applications running on NVIDIA Orin platform.
+
+<1> Run jtop tool
+
+Check the IP address of NVIDIA Orin platform, and then login platform with ssh command:
+
+	$ ssh root@<platform ip>
+
+Set essential environment variable with below command:
+
+	root@nvidia-orin-agx:~# export TERM=xterm-256color
+
+Run "jtop" command:
+
+	root@nvidia-orin-agx:~# jtop
+
+After running the jtop tool, there are some tab items at the bottom of screen.
+
+All Tab: It shows a comprehensive overview of your NVIDIA Orin platform's status and performance.
+         It consolidates a wide range of information to give users a complete picture of their system's health
+         and resource utilization.
+GPU Tab: It shows processes running on the GPU, GPU memory utilization, GPU core utilization, and temperature.
+CPU Tab: It shows the utilization and clock frequency of each CPU core.
+Memory Tab: It shows memory utilization information and allows adding swap space.
+Engine Tab: It shows the status of different hardware accelerator.
+Control Tab: It is able to control over the fan, power modes, and jetson_clocks.
+INFO Tab: It shows a centralized source of information about current NVIDIA Orin platform.
+
+7.3 CUDA
+--------
+
+<1> CUDA Introduction
+
+CUDA is a parallel computing platform that provides a framework for executing computations across thousands of parallel
+processing cores within an NVIDIA GPU.
+CUDA is a programming model that offers a programming interface for languages like C, C++, and Python, so that developers
+could write code that can be executed in parallel on the GPU.
+
+<2> Run CUDA sample
+
+WRlinux has integrated CUDA libs and some samples so that users can develop and run their CUDA applications conveniently.
+There are some cuda sample applications in directory /usr/bin/cuda-samples.
+For example, user can run the "simplePrintf" application with below commands:
+
+root@nvidia-orin-agx:~# cd /usr/bin/cuda-samples
+root@nvidia-orin-agx:/usr/bin/cuda-samples# ./simplePrintf
+
+GPU Device 0: "Ampere" with compute capability 8.7
+
+Device 0: "Orin" with Compute 8.7 capability
+printf() is called. Output:
+
+[3, 0]:         Value is:10
+......
+[3, 7]:         Value is:10
+[1, 0]:         Value is:10
+.....
+[1, 7]:         Value is:10
+[2, 0]:         Value is:10
+.....
+[2, 7]:         Value is:10
+[0, 0]:         Value is:10
+.....
+[0, 7]:         Value is:10
+
+The simplePrintf sample creates 32 threads running GPU cores parallel.
+
+7.4 3D Graphics
+---------------
+
+Run below command to check the Graphics performance of NVIDIA Orin platform:
+
+root@nvidia-orin-agx:~# export DISPLAY=:0
+root@nvidia-orin-agx:~# es2gears_x11
+EGL_VERSION = 1.5
+vertex shader info:
+fragment shader info:
+info:
+302 frames in 5.0 seconds = 60.304 FPS
+301 frames in 5.0 seconds = 59.996 FPS
+300 frames in 5.0 seconds = 60.000 FPS
+301 frames in 5.0 seconds = 59.996 FPS
+
+7.5 Multimedia
+--------------
+
+7.5.1 Camera Preview
+--------------------
+
+In below link, NIVDIA lists all the camera module partners.
+https://marketplace.nvidia.com/en-us/enterprise/robotics-edge/?category=cameras&page=1&limit=15
+
+For NVIDIA Orin AGX platform:
+The arducam 12MP camera module is supported, link as below:
+https://www.arducam.com/arducam-12mp-multi-camera-kit-for-nvidia-jetson-agx-orin.html
+
+<1> Connect arducam 12MP camera module with J509 of NVIDIA Orin AGX platform
+
+<2> Deploy camera_overrides.isp file
+
+Download a debian package from arducam 12MP camera release link as below:
+https://github.com/ArduCAM/MIPI_Camera/releases/download/v0.0.1-agx-orin/arducam-nvidia-l4t-kernel-t234-agx-orin-5.15.148-tegra-36.4.3-20250224115510_arm64_imx477.deb
+And then unpack the debian package with below command:
+	$ dpkg-deb -xv <file.deb> <path to extract>
+And then copy the camera_overrides.isp from <path to extract>/var/nvidia/nvcam/settings to corresponding directory of NVIDIA Orin AGX board.
+
+Note: If the camera_overrides.is file has license limitation, users MUST consult ArduCAM and their own legal department.
+
+<3> Run below command to start camera preview
+
+root@nvidia-orin-agx:~# export DISPLAY=:0
+root@nvidia-orin-agx:~# gst-launch-1.0 nvarguscamerasrc ! 'video/x-raw(memory:NVMM), width=(int)1920, height=(int)1080, \
+                                       format=(string)NV12, framerate=(fraction)30/1' ! nvvidconv ! nvegltransform ! queue ! nveglglessink -e
+
+7.5.2 Video decode
+------------------
+
+Deploy a mp4 video clip onto board, and then run below command:
+
+root@nvidia-orin-agx:~# gst-launch-1.0 filesrc location=<filename.mp4> ! decodebin name=dec ! nvvidconv ! nvegltransform ! nveglglessink
+
+7.5.3 Video encode
+------------------
+
+<1> Capture data from camera and encode with below command:
+
+Only record data:
+root@nvidia-orin-agx:~# gst-launch-1.0 nvarguscamerasrc ! \
+                                       'video/x-raw(memory:NVMM), width=(int)1920, height=(int)1080, \
+                                       format=(string)NV12, framerate=(fraction)30/1' ! nvvidconv ! \
+                                       'video/x-raw(memory:NVMM), format=I420' ! nvv4l2h264enc ! \
+                                       h264parse ! qtmux ! filesink location=output.mp4 -e
+
+Record data and preview:
+root@nvidia-orin-agx:~# gst-launch-1.0 nvarguscamerasrc ! tee name=t ! \
+                                       'video/x-raw(memory:NVMM), width=(int)1920, height=(int)1080, \
+                                       format=(string)NV12, framerate=(fraction)30/1' ! queue ! nvvideoconvert ! nvegltransform ! nveglglessink t. ! queue ! nvvidconv ! \
+                                       'video/x-raw(memory:NVMM), format=I420' ! nvv4l2h264enc ! \
+                                       h264parse ! qtmux ! filesink location=output.mp4 -e
+
+<2> Play the recorded video clip with below command:
+
+root@nvidia-orin-agx:~# gst-launch-1.0 filesrc location=./output.mp4 ! decodebin name=dec ! nvvidconv ! nvegltransform ! nveglglessink
+
+7.5.4 Audio decode
+------------------
+
+If users want to verify audio feature of NVIDIA Orin platform, please connect a monitor that supports for sound playback function.
+
+<1> Play audio encoded with ACC from a mp4 file with below command:
+
+root@nvidia-orin-agx:~# gst-launch-1.0 filesrc location=<filename.mp4> ! qtdemux name=demux demux.audio_0 ! queue ! avdec_aac ! audioconvert ! alsasink -e
+
+<2> Play a mp3 file with below command:
+
+root@nvidia-orin-agx:~# gst-launch-1.0 filesrc location=<filename.mp3> ! mpegaudioparse ! avdec_mp3 ! audioconvert ! alsasink -e
+
+7.5.5 Audio and Video decode
+----------------------------
+
+Play audio and video from a mp4 file at the same time with below command:
+
+root@nvidia-orin-agx:~# gst-launch-1.0 filesrc location=<filename.mp4> ! decodebin name=decoder decoder. \
+                                       ! queue ! nvvidconv ! nvegltransform ! nveglglessink decoder. ! queue ! audioconvert ! alsasink
+
+7.6 DeepStream
+--------------
+
+7.6.1 DeepStream Introduction
+-----------------------------
+
+DeepStream is a streaming analytic toolkit to build AI-powered applications.
+
+DeepStream takes the streaming data as input, from USB/CSI camera, video from file or streams over RTSP, and uses AI
+and computer vision to generate insights from pixels for better understanding the content of data stream.
+
+DeepStream consists of several hardware accelerator plugins that use accelerators such as VIC, GPU, DLA, NVDEC and NVENC.
+
+DeepStream builds on top of several NVIDIA libraries from the CUDA-X stack such as CUDA, TensorRT, NVIDIA® Triton™ Inference
+server and multimedia libraries. TensorRT accelerates the AI inference on NVIDIA GPU.
+
+7.6.2 DeepStream Demonstration
+------------------------------
+
+There will be 3 DeepStream demo applications, and they use the traffic video clips as input source.
+Based on DeepStream feature, the application can analyze the content of video clip, it can detect persons, cars, bikes, the type of cars,
+the brand of cars, the number of cars and the color of cars. The DeepStream feature is based on CUDA，TensorRT and Multimedia.
+So, if the DeepStream applications can work fine, it can prove the CUDA and Deep Learning features also work fine.
+
+<1> DeepStream Application-1
+
+It is a simple example that uses DeepStream element to detect cars, persons, and bikes on a given single H.264 stream.
+Run DeepStream Application-1 with below commands:
+
+root@nvidia-orin-agx:~# export DISPLAY=:0
+root@nvidia-orin-agx:~# cd /opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test1
+root@nvidia-orin-agx:/opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test1# \
+                          deepstream-test1-app /opt/nvidia/deepstream/deepstream-7.1/samples/streams/sample_720p.h264
+
+At the first time of running DeepStream application, it needs spend some time to create engine from model files.
+When the DeepStream application starts executing, users can see that there are red color rectangle around the detected objects.
+Because the DeepStream find out persons, cars and bikes from the traffic video clip.
+
+<2> DeepStream Application-2
+
+The second DeepStream application is more powerful than the first one.
+Run DeepStream Application-2 with below commands:
+
+root@nvidia-orin-agx:~# export DISPLAY=:0
+root@nvidia-orin-agx:~# cd /opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test2
+root@nvidia-orin-agx:/opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test2# \
+                          deepstream-test2-app /opt/nvidia/deepstream/deepstream-7.1/samples/streams/sample_720p.h264
+
+At the first time of running DeepStream application, it needs spend some time to create engine from model files.
+When the DeepStream application starts executing, user can see there are also red color rectangle around the detected objects.
+Besides detect the person, cars, and bikes. User also can see there are some strings on the top red rectangle, it indicates
+the color, the brand, the type and the number of cars, such as the color is silvery, the brand is Toyota, Mercedes Benz or Honda,
+the type is SUV.
+
+<3> DeepStream Application-3
+
+The third application show DeepStream can accept more than one video streams as input source. It can analyze multiple video
+streams at the same time, and show them with Multiview style on the screen.
+Run DeepStream Application-3 with below commands:
+
+root@nvidia-orin-agx:~# export DISPLAY=:0
+root@nvidia-orin-agx:~# cd /opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test3
+root@nvidia-orin-agx:/opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test3# \
+                          deepstream-test3-app file:///opt/nvidia/deepstream/deepstream-7.1/samples/streams/sample_1080p_h264.mp4 \
+                          file:///opt/nvidia/deepstream/deepstream-7.1/samples/streams/sample_720p.mp4
+
+Note: All the above DeepStream demonstrations need DP or HDMI monitor as output end, so please connect a kind of monitor before
+      starting your NVIDIA Orin platform.
+
+7.7 NVIDIA Container Toolkit
+----------------------------
+
+7.7.1 Introduction
+------------------
+
+NVIDIA Container Toolkit is a collection of libraries and utilities that enables users to build and run GPU-accelerated containers.
+It essentially provides a way to expose NVIDIA GPUs to Linux containers, allowing them to be used for tasks like deep learning model
+training or other computationally intensive operations.
+
+7.7.2 Container Demonstration
+-----------------------------
+
+In WRLinux NVIDIA Orin BSP, nvidia-docker and nvidia-container-toolkit packages are integrated by default.
+User can run NVIDIA official container with belwo steps.
+
+<1> Set correct system time
+
+Open timesyncd configuration file with below command:
+root@nvidia-orin-agx:~# vim /etc/systemd/timesyncd.conf
+
+Add a reasonable NTP server, and then restart systemd-timesyncd service with below command:
+root@nvidia-orin-agx:~# systemctl restart systemd-timesyncd.service
+
+And then check time sync status with below command:
+root@nvidia-orin-agx:~# timedatectl timesync-status
+root@nvidia-orin-agx:~# date
+
+<2> Network Access Permissions(Optional)
+
+Users needs to make sure they can access Internet smoothly. Maybe a root certificate authority that is suitable for
+their network environment needs to be installed.
+In addition, a network agent may be also an essential configuration to access Internet.
+
+<3> Restart docker service
+
+root@nvidia-orin-agx:~# systemctl restart docker
+root@nvidia-orin-agx:~# systemctl status docker
+
+<4> Pull NVIDIA container
+
+root@nvidia-orin-agx:~# docker pull nvcr.io/nvidia/deepstream-l4t:7.1-triton-multiarch
+
+Users also can pull other containers from below link:
+https://catalog.ngc.nvidia.com/orgs/nvidia/containers/deepstream-l4t
+
+<5> Run NVIDIA container
+
+root@nvidia-orin-agx:~# export DISPLAY=:0
+
+Allow external applications to connect to the host's X display
+root@nvidia-orin-agx:~# xhost +
+
+root@nvidia-orin-agx:~# docker run -it --rm --network=host --runtime nvidia -e DISPLAY=$DISPLAY -w /opt/nvidia/deepstream/deepstream-7.1 \
+                                   -v /tmp/.X11-unix/:/tmp/.X11-unix nvcr.io/nvidia/deepstream-l4t:7.1-triton-multiarch
+
+<6> Run DeepStream demo in container
+
+0;root@nvidia-orin-agx: /opt/nvidia/deepstream/deepstream-7.1root@nvidia-orin-agx:/opt/nvidia/deepstream/deepstream-7.1# \
+                        cd /opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test1
+0;root@nvidia-orin-agx: /opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test1root@nvidia-orin-agx:\
+                        /opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test1# deepstream-test1-app \
+                        /opt/nvidia/deepstream/deepstream-7.1/samples/streams/sample_720p.h264
+
+Note: NFS is not able to serve as the backing filesystem, so users need to deploy WRLinux system on eMMC if they want to run container image.
+
+7.8 CAN bus
+-----------
+
+7.8.1 CAN bus connection layout
+-------------------------------
+
+NVIDIA Orin platform supports CAN bus, but it needs external transceiver to implement data communication.
+NVIDIA recommends the WaveShare SN65HVD230 CAN transceiver module for NVIDIA Orin platform, link as below:
+https://www.amazon.com/SN65HVD230-CAN-Board-Communication-Development/dp/B00KM6XMXO
+
+For NVIDIA Orin AGX platform:
+There are 2 CAN ports in the 40-pin header(J30), so it needs 2 transceivers to connect the 2 CAN ports.
+Detailed connection layout as below:
+
+        CAN0 port                 transceiver 0             transceiver 1               CAN1 port
+------------------------        -----------------         -----------------       -----------------------
+|                       |       |               |         |               |       |                      |
+|              CAN0_DIN |<------| RXD           |         |           RXD |------>| CAN1_DIN             |
+|        (pin29 of J30) |       |         CAN H |<------->| CAN H         |       | (pin37 of J30)       |
+|                       |       |               |         |               |       |                      |
+|             CAN0_DOUT |------>| TXD           |         |           TXD |<------| CAN1_DOUT            |
+|        (pin31 of J30) |       |               |         |               |       | (pin33 of J30)       |
+|                       |       |               |         |               |       |                      |
+|                   3V3 |------>| 3V3           |         |           3V3 |<------| 3V3                  |
+|        (pin01 of J30) |       |         CAN L |<------->| CAN L         |       | (pin17 of J30)       |
+|                       |       |               |         |               |       |                      |
+|                   GND |------>| GND           |         |           GND |<------| GND                  |
+|        (pin09 of J30) |       |               |         |               |       | (pin06 of J30)       |
+|                       |       |               |         |               |       |                      |
+------------------------        -----------------         -----------------       -----------------------
+
+7.8.2 CAN bus data communication
+--------------------------------
+
+<1> Set pinmux CAN ports with below commands:
+
+Set CAN0 In pin
+root@nvidia-orin-agx:~# devmem2 0x0c303018
+root@nvidia-orin-agx:~# devmem2 0x0c303018 h 0xc458
+
+Set CAN0 Out pin
+root@nvidia-orin-agx:~# devmem2 0x0c303010
+root@nvidia-orin-agx:~# devmem2 0x0c303010 h 0xc400
+
+Set CAN1 In pin
+root@nvidia-orin-agx:~# devmem2 0x0c303008
+root@nvidia-orin-agx:~# devmem2 0x0c303008 h 0xc458
+
+Set CAN1 Out pin
+root@nvidia-orin-agx:~# devmem2 0x0c303000
+root@nvidia-orin-agx:~# devmem2 0x0c303000 h 0xc400
+
+<2> Reload CAN driver below commands:
+root@nvidia-orin-agx:~# modprobe -r mttcan
+root@nvidia-orin-agx:~# modprobe mttcan
+
+<3> Setup can0 and can1 with below command:
+root@nvidia-orin-agx:~# ip link set can0 up type can bitrate 500000 dbitrate 1000000 berr-reporting on fd on
+root@nvidia-orin-agx:~# ip link set can1 up type can bitrate 500000 dbitrate 1000000 berr-reporting on fd on
+root@nvidia-orin-agx:~# ifconfig
+
+<4> Data send(can1) and receive(can0)
+root@nvidia-orin-agx:~# candump can0 &
+
+Send a frame to can1 with CAN ID 123 and data "abcdabcd"
+root@nvidia-orin-agx:~# cansend can1 123#abcdabcd
+
+Send a FD frame to can1 with CAN ID 123, flag bit 1, and data "abcdabcd"
+root@nvidia-orin-agx:~# cansend can1 123##1abcdabcd
+
+Use cangen tool to generate CAN frame
+root@nvidia-orin-agx:~# cangen can1
+
+<5> Check data sending and receiving on can0 and can1 with below command:
+root@nvidia-orin-agx:~# ip -details -statistics link show can0
+root@nvidia-orin-agx:~# ip -details -statistics link show can1
+
+7.9 WIFI/BT
+-----------
+
+For NVIDIA Orin AGX platform:
+It is installed a WIFI/BT module as below:
+AW-CB375NF Dual-Band Wireless NIC, 2.4G/5GHz Dual-Band WiFi 5, RTL8822CE-CG Core, Bluetooth 5.0, Supports BLE
+Introduction link: https://www.waveshare.com/wireless-aw-cb375nf.htm
+
+7.9.1 WIFI Demonstration
+------------------------
+
+<1> Setup WIFI module with below command:
+
+root@nvidia-orin-agx:~# ifconfig wlP1p1s0 up
+root@nvidia-orin-agx:~# iw wlP1p1s0 scan
+root@nvidia-orin-agx:~# iw dev wlP1p1s0 connect <AP essid>
+root@nvidia-orin-agx:~# iw dev wlP1p1s0 link
+root@nvidia-orin-agx:~# dhcpcd wlP1p1s0
+
+<2> Ping AP with below command:
+
+root@nvidia-orin-agx:~# ping <AP address> -I wlP1p1s0 -c 5
+
+7.9.2 BT Demonstration
+----------------------
+
+<1> Setup BT module with below command:
+
+root@nvidia-orin-agx:~# hciconfig hci0 up
+root@nvidia-orin-agx:~# hcitool -i hci0 scan
+root@nvidia-orin-agx:~# hcitool cc <BT MAC address>
+root@nvidia-orin-agx:~# hcitool con
+
+<2> Ping remote BT device with below command:
+
+root@nvidia-orin-agx:~# l2ping -c 5 <BT MAC address>
+
+7.10 USB
+--------
+
+7.10.1 USB Host
+---------------
+
+For NVIDIA Orin AGX platform:
+There are 4 USB Type-A ports(J33) on NVIDIA Orin AGX board, they all work in USB host mode.
+Users can connect USB disk, mouse, keyboard and other USB device to any of them.
+
+7.10.2 USB OTG
+--------------
+
+For NVIDIA Orin AGX platform:
+There is one USB Type-C port(J40) on NVIDIA Orin AGX board, it works in USB otg mode.
+
+<1> Work as USB host mode
+
+When users connect USB disk, mouse, keyboard and other USB device with the USB Type-C port, these USB
+device is able to be detected normally.
+
+<2> Work as USB device mode
+
+When users connect the USB Type-C port with Host PC, it can work in USB device mode.
+For example, NVIDIA Orin board can work as USB disk.
+Insert a USB disk into USB Type-A port of NVIDIA Orin board, and then run below command:
+
+root@nvidia-orin-agx:~# modprobe g_mass_storage file=/dev/sdaX stall=0 removable=1
+
+After running above command, there will be an USB disk detected on Host PC.
+
+Note: Set a reasonable number for 'X' to use expected USB partition.
+
+7.11 microSD card
+-----------------
+
+For NVIDIA Orin AGX platform:
+There is a microSD card slot(J10) on the NVIDIA Orin AGX board.
+When user insert a microSD card into slot, it will be detected, detailed output as below:
+
+root@nvidia-orin-agx:~#
+mmc1: new ultra high speed SDR104 SDHC card at address 5048
+mmcblk1: mmc1:5048 SD32G 28.8 GiB
+ mmcblk1: p1 p2
+root@nvidia-orin-agx:~# ls /dev/mmcblk1*
+/dev/mmcblk1  /dev/mmcblk1p1  /dev/mmcblk1p2
+
+7.12 NVME card
+--------------
+
+For NVIDIA Orin AGX platform:
+There is a M.2 M-Key slot(J11) on the NVIDIA Orin AGX board.
+When user insert a NVME card into slot, it will be detected after system boots up, detailed output as below:
+
+root@nvidia-orin-agx:~# ls /dev/nvme0*
+/dev/nvme0  /dev/nvme0n1  /dev/nvme0n1p1
+
+7.13 PCIe
+---------
+
+For NVIDIA Orin AGX platform:
+There is a PCIe x16 connector(J6) on the NVIDIA Orin AGX board.
+
+User can verify PCIe feature with below steps:
+
+<1> Connect a PCIe network card with PCIe x16 connector(J6). For example, Intel Corporation 82574L Gigabit Network card.
+
+<2> Add below kernel feature in local.conf
+	KERNEL_FEATURES:append = " features/intel-e1xxxx/intel-e1xxxx.scc"
+
+<3> Build and deploy WRLinux system referring to section 4 and section 5.
+
+<4> After system boots up, verify PCIe feature with below command:
+
+root@nvidia-orin-agx:~# lspci
+0005:00:00.0 PCI bridge: NVIDIA Corporation Device 229a (rev a1)
+0005:01:00.0 Ethernet controller: Intel Corporation 82574L Gigabit Network Connection
+
+root@nvidia-orin-agx:~# ifconfig
+root@nvidia-orin-agx:~# ethtool <PCIe network card interface name>
+root@nvidia-orin-agx:~# ping <Remote PC IP address> -I <PCIe network card interface name> -c 5
+
+
+8. References
+=============
+
+[1] https://developer.nvidia.com/embedded/learn/get-started-jetson-agx-orin-devkit
+[2] https://developer.nvidia.com/embedded/learn/jetson-agx-orin-devkit-user-guide/index.html
+[3] https://docs.nvidia.com/jetson/archives/r36.4.3/DeveloperGuide/index.html
+[4] https://developer.nvidia.com/embedded/jetpack
+[5] https://developer.nvidia.com/embedded/jetson-linux-r3643
+[6] https://developer.nvidia.com/downloads/jetson-agx-orin-developer-kit-carrier-board-design-files
+[7] https://developer.nvidia.com/embedded/secure/jetson/agx_orin/jetson_agx_orin_pinmux_config_template.xlsm
+[8] NVIDIA Jetson AGX Orin Series Modules
+[9] NVIDIA Jetson AGX Orin Developer Kit Carrier Board
