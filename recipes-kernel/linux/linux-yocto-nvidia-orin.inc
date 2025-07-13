@@ -11,3 +11,6 @@ KMACHINE:nvidia-orin-agx = "nvidia-orin-nx"
 KERNEL_DTC_FLAGS:append:nvidia-orin = " -@"
 
 require ${@'recipes-kernel/linux/tegra-kernel.inc' if 'tegra' in d.getVar('MACHINEOVERRIDES').split(':') else ''}
+
+# All of our device trees are out-of-tree
+KERNEL_DEVICETREE:forcevariable = ""

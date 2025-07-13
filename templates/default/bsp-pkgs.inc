@@ -22,11 +22,12 @@ IMAGE_INSTALL:append = " ${@bb.utils.contains('BUILD_NVIDIA_PROPRIETARY_PACKAGE'
 	devmem2 \
 	alsa-utils', '', d)}"
 
-IMAGE_INSTALL:append = " ${@bb.utils.contains('BUILD_NVIDIA_PROPRIETARY_PACKAGE', '1', \
-	'', 'kernel-devicetree', d)}"
-
 IMAGE_INSTALL:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'opengl x11', 'mesa-demos', '', d)}"
 IMAGE_INSTALL:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'vulkan', 'vulkan-tools', '', d)}"
 
 TOOLCHAIN_HOST_TASK:append = " ${@bb.utils.contains('BUILD_NVIDIA_PROPRIETARY_PACKAGE', '1', \
 	'nativesdk-packagegroup-cuda-sdk-host', '', d)}"
+
+IMAGE_INSTALL:append = " nvidia-kernel-oot \
+                         nvidia-kernel-oot-dtb \
+"
