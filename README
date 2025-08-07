@@ -1303,3 +1303,12 @@ root@nvidia-orin-agx:~# ping <Remote PC IP address> -I <PCIe network card interf
 [7] https://developer.nvidia.com/embedded/secure/jetson/agx_orin/jetson_agx_orin_pinmux_config_template.xlsm
 [8] NVIDIA Jetson AGX Orin Series Modules
 [9] NVIDIA Jetson AGX Orin Developer Kit Carrier Board
+
+9. Known Issues
+===============
+
+9.1 dm-verity Limitation
+------------------------
+So far, nvidia-orin BSP doesn't support dm-verity feature. In other words, when setting up nvidia-orin BSP
+project, template parameter can't include feature/dm-verity.
+If customer wants to support dm-verity feature on NVIDIA Orin platform, please connect with WR Support.
