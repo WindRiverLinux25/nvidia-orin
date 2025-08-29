@@ -1290,6 +1290,29 @@ root@nvidia-orin-agx:~# ifconfig
 root@nvidia-orin-agx:~# ethtool <PCIe network card interface name>
 root@nvidia-orin-agx:~# ping <Remote PC IP address> -I <PCIe network card interface name> -c 5
 
+7.14 OP-TEE
+-----------
+
+7.14.1 Building OP-TEE OS
+-------------------------
+
+Currently, OP-TEE feature is supported by default. When users build BSP project referring to section 4,
+the optee-os(BL32 image) is built automatically, and can be deployed into system referring to section 5.
+
+7.14.2 OP-TEE Verificaton
+-------------------------
+
+Run below command to validate the OP-TEE feature with highest level 15
+
+	# xtest -l 15
+
+	Theoretically, all the test cases should be passed, and users will get below test result.
+
+	55826 subtests of which 0 failed
+	137 test cases of which 0 failed
+	0 test cases were skipped
+	TEE test application done!
+
 
 8. References
 =============
