@@ -1,0 +1,39 @@
+From 784aa31dcbd22d2c2029f51af0d80bf7188a67b9 Mon Sep 17 00:00:00 2001
+From: Meng Li <Meng.Li@windriver.com>
+Date: Thu, 4 Sep 2025 19:06:11 +0800
+Subject: [PATCH] cyptodev-tests: make sure address of data structure aligns
+ with 16 bytes
+
+When running the hmac command of cyptodev-tests, it reports
+below error on NVIDIA Orin platform:
+FAIL: Hash in decrypted data different than in encrypted.
+Because in NVIDIA secure engine driver, the field cra_alignmask
+of struct crypto_alg is set as 0xf, it means that the address of
+encrypt/decrypt data needs to align with 16 bytes at least, otherwise
+it may cause dma memory operation failed, and then data encrypt/decrypt
+failed. So, add align attribute to make sure address of data structure
+alignment meets the request of NVIDIA secure engine driver.
+
+Upstream-Status: Pending
+
+Signed-off-by: Meng Li <Meng.Li@windriver.com>
+---
+ tests/hmac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/hmac.c b/tests/hmac.c
+index 8d6492e..3befd31 100644
+--- a/tests/hmac.c
++++ b/tests/hmac.c
+@@ -23,7 +23,7 @@ static int debug = 0;
+ static int
+ test_crypto(int cfd)
+ {
+-	struct {
++	struct __attribute__((aligned(16))) {
+ 		uint8_t	in[DATA_SIZE],
+ 			encrypted[DATA_SIZE],
+ 			decrypted[DATA_SIZE],
+-- 
+2.34.1
+
