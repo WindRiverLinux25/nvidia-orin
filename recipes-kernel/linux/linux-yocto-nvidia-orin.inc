@@ -7,6 +7,7 @@ COMPATIBLE_MACHINE:nvidia-orin = "nvidia-orin"
 TARGET_SUPPORTED_KTYPES:nvidia-orin = "standard preempt-rt"
 
 KMACHINE:nvidia-orin-agx = "nvidia-orin-nx"
+KMACHINE:nvidia-orin-nano = "nvidia-orin-nx"
 
 KERNEL_DTC_FLAGS:append:nvidia-orin = " -@"
 
