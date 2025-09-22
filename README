@@ -900,7 +900,7 @@ And then unpack the debian package with below command:
 	$ dpkg-deb -xv <file.deb> <path to extract>
 And then copy the camera_overrides.isp from <path to extract>/var/nvidia/nvcam/settings to corresponding directory of NVIDIA Orin AGX board.
 
-Note: If the camera_overrides.is file has license limitation, users MUST consult ArduCAM and their own legal department.
+Note: If the camera_overrides.isp file has license limitation, users MUST consult ArduCAM and their own legal department.
 
 <3> Run below command to start camera preview
 
