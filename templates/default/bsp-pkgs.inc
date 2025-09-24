@@ -20,7 +20,8 @@ IMAGE_INSTALL:append = " ${@bb.utils.contains('BUILD_NVIDIA_PROPRIETARY_PACKAGE'
 	dtc \
 	can-utils \
 	devmem2 \
-	alsa-utils', '', d)}"
+	alsa-utils \
+	gstreamer1.0-plugins-ugly', '', d)}"
 
 IMAGE_INSTALL:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'opengl x11', 'mesa-demos', '', d)}"
 IMAGE_INSTALL:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'vulkan', 'vulkan-tools', '', d)}"

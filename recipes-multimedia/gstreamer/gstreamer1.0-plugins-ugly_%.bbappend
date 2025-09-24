@@ -1,0 +1,1 @@
+PACKAGECONFIG:append:nvidia-orin = " x264"
