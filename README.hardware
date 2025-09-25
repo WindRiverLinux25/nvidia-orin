@@ -39,34 +39,36 @@ the corresponding h/w features exist.
 	+ GPU: Up to NVIDIA Ampere architecture with 2048 NVIDIA CUDA cores and 64 Tensor Cores, up to 1.3 GHz
 
   o Engine
-	+ Deep Learning Accelerator: 2x NVDLA v2.0, up to 1.6 GHz
-	+ Vision Accelerator: PVA v2.0
-	+ Video Encoder: H.264, H.265 (HEVC), AV1
+	+ Deep Learning Accelerator: 2x NVDLA v2.0, up to 1.6 GHz (Only for Orin AGX)
+	+ Vision Accelerator: PVA v2.0 (Only for Orin AGX)
+	+ Video Encoder: H.264, H.265 (HEVC), AV1 (Only for Orin AGX)
 	+ Video Decoder: H.264, H.265 (HEVC), VP8, VP9, VC1, AV1, MPEG2, MPEG4
-	+ JPEG Codec: Color space conversion, Single image and batched image decoding
+	+ JPEG Codec: Color space conversion, Single image and batched image decoding (Only for Orin AGX)
 
   o Memory
-	+ 64GB 256-bit LPDDR5 204.8 GB/s
+	+ 64GB 256-bit LPDDR5 204.8 GB/s (Only for Orin AGX)
+	+ 8GB 128-bit LPDDR5 68 GB/s or 102 GB/s (MAXN_SUPER) (Only for Orin Nano)
 
   o Bus
-	+ 9 x I2C
-	+ 8 x I2S
-	+ 2 x CAN
-	+ 4 x UART
-	+ 3 x SPI
-	+ 4 x USB 2.0
+	+ 9 x I2C (Orin AGX), 4 x I2C (Orin Nano)
+	+ 8 x I2S (Orin AGX), 2 x I2S (Orin Nano)
+	+ 2 x CAN (Orin AGX), 1 x CAN (Orin Nano)
+	+ 4 x UART (Orin AGX), 3 x UART (Orin Nano)
+	+ 3 x SPI (Orin AGX), 2 x SPI (Orin Nano)
+	+ 4 x USB 2.0(Orin AGX), 3x USB 2.0 (Orin Nano)
 	+ 3 x USB 3.2 Gen2
-	+ 1 x PCIe: Standard PCIe x16, Lower x8 used for PCIe (Upper x8 reserved)
-	+ 2 x SD and eMMC Controller: supporting eMMC 5.1, SD 4.0, SDHOST 4.0 and SDIO 3.0
+	+ 1 x PCIe: Standard PCIe x16, Lower x8 used for PCIe (Upper x8 reserved) (Only for Orin AGX)
+	+ 2 x SD and eMMC Controller: supporting eMMC 5.1, SD 4.0, SDHOST 4.0 and SDIO 3.0 (Orin AGX)
+	+ 1 x SD and eMMC Controller: supporting eMMC 5.1, SD 4.0, SDHOST 4.0 and SDIO 3.0 (Orin Nano)
 	
   o Network
-	+ Ethernet: Up to 10GBASE-T
+	+ Ethernet: Up to 10GBASE-T (Orin AGX), up to 1000BASE-T (Orin Nano)
 	+ Wireless: AW-CB375NF Dual-Band Wireless NIC
 				2.4G/5GHz Dual-Band WiFi 5, RTL8822CE-CG Core
 				Bluetooth 5.0, Supports BLE
 
   o Storage
-	+ eMMC
+	+ eMMC (Only for Orin AGX)
 	+ NVMe card
 	+ SD card
 	+ USB host
@@ -74,7 +76,9 @@ the corresponding h/w features exist.
 
   o Multimedia
 	+ USB Camera
-	+ CSI Camera: 16 lanes (6, x2 or 4, x4) DPHY or CPHY
+	+ CSI Camera:
+		Orin AGX: 16 lanes (6, x2 or 4, x4) DPHY or CPHY
+		Orin Nano: 4-lane (1, x2 or x4 and 1, x2) DPHY
 	+ Display Port: Version DP v1.4a
                     Supports MST and DSC
                     Supports resolution Up to 8K60
@@ -110,13 +114,30 @@ The following features are not supported and not validated:
 4.1 Target Notes
 ----------------
 
+4.1.1 Orin AGX platform
+-----------------------
+
 NOTE: This BSP is only validated in the following environment with booting from
 eMMC, if used in a different environment it may run into unknown issues.
 
-4.1.1 Validated Board Info
---------------------------
+4.1.1.1 Validated Board Info
+----------------------------
 
-	Processor:		Nvidia Jetson AGX Orin
-	Board:			Nvidia Jetson AGX Orin Developer kit
+	Processor:		Nvidia Jetson Orin AGX
+	Board:			Nvidia Jetson Orin AGX Developer kit
+	BootLoader:		Jetson UEFI firmware
+	BootLoader Version:	36.4.3
+
+4.1.2 Orin Nano platform
+------------------------
+
+NOTE: This BSP is only validated in the following environment with booting from
+NVMe card, if used in a different environment it may run into unknown issues.
+
+4.1.2.1 Validated Board Info
+----------------------------
+
+	Processor:		Nvidia Jetson Orin Nano
+	Board:			Nvidia Jetson Orin Nano Developer kit
 	BootLoader:		Jetson UEFI firmware
 	BootLoader Version:	36.4.3
