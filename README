@@ -524,7 +524,7 @@ The "tegrastats" command is a tool that reports memory usage, GPU usage, CPU usa
 Run this command, It will start printing the system statistics each second. If users need to customize the tegrastats behavior, it provides
 the following command-line options:
 
-root@nvidia-orin-agx:~# tegrastats --help
+root@<MACHINE>:~# tegrastats --help
 Usage: tegrastats [-option]
 Options:
     --help                    : print this help screen
@@ -599,7 +599,7 @@ The EDP represents the upper limitation of Orin series module, so it has no powe
 
 If users want to check the current power mode, please run below command:
 
-root@nvidia-orin-agx:~# /usr/sbin/nvpmodel -q
+root@<MACHINE>:~# /usr/sbin/nvpmodel -q
 NV Power Mode: MODE_30W
 2
 
@@ -608,7 +608,7 @@ NV Power Mode: MODE_30W
 If users want to change mode of Orin series module, please run below command:
 For example, change into mode 0.
 
-root@nvidia-orin-agx:~# /usr/sbin/nvpmodel -m 0
+root@<MACHINE>:~# /usr/sbin/nvpmodel -m 0
 NVPM WARN: Golden image context is already created
 NVPM WARN: Reboot required for changing to this power mode: 0
 NVPM WARN: DO YOU WANT TO REBOOT NOW? enter YES/yes to confirm:
@@ -625,7 +625,7 @@ Note: The mode persists across power cycles and won't change unless nvpmodel is 
 The Orin platform always boot from one CPU denominated the master CPU which cannot be turned off. All other CPUs can be turned off.
 For example, the CPUs are listed in the directory /sys/devices/system/cpu/ of Orin AGX platform as below:
 
-root@nvidia-orin-agx:~# ls -v /sys/devices/system/cpu | grep cpu[0-9]
+root@<MACHINE>:~# ls -v /sys/devices/system/cpu | grep cpu[0-9]
 cpu0
 cpu1
 cpu2
@@ -641,19 +641,19 @@ cpu11
 
 <2> Check the state of a CPU
 
-root@nvidia-orin-agx:~# cat /sys/devices/system/cpu/cpu0/online
+root@<MACHINE>:~# cat /sys/devices/system/cpu/cpu0/online
 1
 
 <3> Turn on a CPU
 
-root@nvidia-orin-agx:~# echo 1 > /sys/devices/system/cpu/cpu8/online
+root@<MACHINE>:~# echo 1 > /sys/devices/system/cpu/cpu8/online
 Detected PIPT I-cache on CPU8
 GICv3: CPU8: found redistributor 20000 region 0:0x000000000f540000
 CPU8: Booted secondary processor 0x0000020000 [0x410fd421]
 
 <4> Turn off a CPU
 
-root@nvidia-orin-agx:~# echo 0 > /sys/devices/system/cpu/cpu8/online
+root@<MACHINE>:~# echo 0 > /sys/devices/system/cpu/cpu8/online
 psci: CPU8 killed (polled 0 ms)
 
 
@@ -662,31 +662,31 @@ psci: CPU8 killed (polled 0 ms)
 
 <1> To show the CPU lower boundary, upper boundary, and current frequency with below commands:
 
-root@nvidia-orin-agx:~# cat /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_min_freq
+root@<MACHINE>:~# cat /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_min_freq
 115200
-root@nvidia-orin-agx:~# cat /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_max_freq
+root@<MACHINE>:~# cat /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_max_freq
 2201600
-root@nvidia-orin-agx:~# cat /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_cur_freq
+root@<MACHINE>:~# cat /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_cur_freq
 729600
 
 <2> Get the available frequencies with below commands:
 
-root@nvidia-orin-agx:~# cat /sys/devices/system/cpu/cpu1/cpufreq/scaling_available_frequencies
+root@<MACHINE>:~# cat /sys/devices/system/cpu/cpu1/cpufreq/scaling_available_frequencies
 115200 192000 268800 345600 422400 499200 576000 652800 729600 806400 883200 960000 1036800 1113600 1190400 1267200 1344000
 1420800 1497600 1574400 1651200 1728000 1804800 1881600 1958400 2035200 2112000 2188800 2201600
 
 <3> To change the CPU upper boundary with below commands:
 
-root@nvidia-orin-agx:~# echo 2112000 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq
+root@<MACHINE>:~# echo 2112000 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq
 
 <4> To change the CPU lower boundary with below commands:
 
-root@nvidia-orin-agx:~# echo 192000 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
+root@<MACHINE>:~# echo 192000 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
 
 <5> To set the static CPU frequency with below commands:
 
-root@nvidia-orin-agx:~# echo 2201600 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
-root@nvidia-orin-agx:~# echo 2201600 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq
+root@<MACHINE>:~# echo 2201600 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
+root@<MACHINE>:~# echo 2201600 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq
 
 7.1.5 Manage GPU Frequency Scaling
 ----------------------------------
@@ -696,64 +696,64 @@ the load in order to reduce power consumption, 3D frequency scaling is enabled b
 
 <1> To disable 3D frequency scaling with below command:
 
-root@nvidia-orin-agx:~# echo 0 > /sys/devices/platform/bus@0/17000000.gpu/enable_3d_scaling
+root@<MACHINE>:~# echo 0 > /sys/devices/platform/bus@0/17000000.gpu/enable_3d_scaling
 
 <2> To enable 3D frequency scaling run the following command:
 
-root@nvidia-orin-agx:~# echo 1 > /sys/devices/platform/bus@0/17000000.gpu/enable_3d_scaling
+root@<MACHINE>:~# echo 1 > /sys/devices/platform/bus@0/17000000.gpu/enable_3d_scaling
 
 7.1.6 Change GPU Frequency
 --------------------------
 
 <1> To show the GPU lower boundary, upper boundary, and current frequency with below commands:
 
-root@nvidia-orin-agx:~# cat /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/min_freq
+root@<MACHINE>:~# cat /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/min_freq
 306000000
-root@nvidia-orin-agx:~# cat /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/cur_freq
+root@<MACHINE>:~# cat /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/cur_freq
 306000000
-root@nvidia-orin-agx:~# cat /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/max_freq
+root@<MACHINE>:~# cat /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/max_freq
 1300500000
 
 <2> Get the available frequencies with below commands:
 
-root@nvidia-orin-agx:~# cat /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/available_frequencies
+root@<MACHINE>:~# cat /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/available_frequencies
 306000000 408000000 510000000 612000000 714000000 816000000 918000000 1020000000 1122000000 1224000000 1300500000
 
 <3> To change the GPU upper boundary with below commands:
 
-root@nvidia-orin-agx:~# echo 1224000000 > /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/max_freq
+root@<MACHINE>:~# echo 1224000000 > /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/max_freq
 
 <4> To change the GPU lower boundary with below commands:
 
-root@nvidia-orin-agx:~# echo 408000000 > /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/min_freq
+root@<MACHINE>:~# echo 408000000 > /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/min_freq
 
 <5> To set the static GPU frequency with below commands:
 
-root@nvidia-orin-agx:~# echo 1224000000 > /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/min_freq
-root@nvidia-orin-agx:~# echo 1224000000 > /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/max_freq
+root@<MACHINE>:~# echo 1224000000 > /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/min_freq
+root@<MACHINE>:~# echo 1224000000 > /sys/devices/platform/bus@0/17000000.gpu/devfreq/17000000.gpu/max_freq
 
 7.1.7 Change Memory Frequency
 -----------------------------
 
 <1> To show the EMC lower boundary, upper boundary, and current frequency with below commands:
 
-root@nvidia-orin-agx:~# cat /sys/kernel/debug/bpmp/debug/clk/emc/max_rate
+root@<MACHINE>:~# cat /sys/kernel/debug/bpmp/debug/clk/emc/max_rate
 3199000000
-root@nvidia-orin-agx:~# cat /sys/kernel/debug/bpmp/debug/clk/emc/min_rate
+root@<MACHINE>:~# cat /sys/kernel/debug/bpmp/debug/clk/emc/min_rate
 204000000
-root@nvidia-orin-agx:~# cat /sys/kernel/debug/bpmp/debug/clk/emc/rate
+root@<MACHINE>:~# cat /sys/kernel/debug/bpmp/debug/clk/emc/rate
 2133000000
 
 <2> Get the available frequencies with below commands:
 
-root@nvidia-orin-agx:~# ls /sys/kernel/debug/bpmp/debug/emc/tables/regular/
+root@<MACHINE>:~# ls /sys/kernel/debug/bpmp/debug/emc/tables/regular/
 204000  2133000  3199000  665600
 
 <3> To set static EMC frequency with below commands:
 
-root@nvidia-orin-agx:~# echo 1 > /sys/kernel/debug/bpmp/debug/clk/emc/mrq_rate_locked
-root@nvidia-orin-agx:~# echo 1 > /sys/kernel/debug/bpmp/debug/bwmgr/bwmgr_halt
-root@nvidia-orin-agx:~# echo 2133000000 > /sys/kernel/debug/bpmp/debug/clk/emc/rate
+root@<MACHINE>:~# echo 1 > /sys/kernel/debug/bpmp/debug/clk/emc/mrq_rate_locked
+root@<MACHINE>:~# echo 1 > /sys/kernel/debug/bpmp/debug/bwmgr/bwmgr_halt
+root@<MACHINE>:~# echo 2133000000 > /sys/kernel/debug/bpmp/debug/clk/emc/rate
 
 7.1.8 Jetson Clocks Tool
 ------------------------
@@ -761,7 +761,7 @@ root@nvidia-orin-agx:~# echo 2133000000 > /sys/kernel/debug/bpmp/debug/clk/emc/r
 NVIDIA provides the jetson_clocks.sh script to maximize Orin module performance by setting static max frequency to CPU, GPU, and EMC clocks.
 The script can also be used to show current clock settings, store current clock settings into a file, and restore clock settings from a file.
 
-root@nvidia-orin-agx:~# jetson_clocks --help
+root@<MACHINE>:~# jetson_clocks --help
 Maximize jetson performance by setting static max frequency to CPU, GPU and EMC clocks.
 Usage:
 jetson_clocks [options]
@@ -775,19 +775,19 @@ jetson_clocks [options]
 
 <1> To show the current settings with below commands:
 
-root@nvidia-orin-agx:~# jetson_clocks --show
+root@<MACHINE>:~# jetson_clocks --show
 
 <2> To store the current settings with below commands:
 
-root@nvidia-orin-agx:~# jetson_clocks --store
+root@<MACHINE>:~# jetson_clocks --store
 
 <3> To maximize performance with below commands:
 
-root@nvidia-orin-agx:~# jetson_clocks
+root@<MACHINE>:~# jetson_clocks
 
 <4> To restore the previous settings with below commands:
 
-root@nvidia-orin-agx:~# jetson_clocks --restore
+root@<MACHINE>:~# jetson_clocks --restore
 
 7.2 System Monitoring Tool
 --------------------------
@@ -804,11 +804,11 @@ Check the IP address of NVIDIA Orin platform, and then login platform with ssh c
 
 Set essential environment variable with below command:
 
-	root@nvidia-orin-agx:~# export TERM=xterm-256color
+	root@<MACHINE>:~# export TERM=xterm-256color
 
 Run "jtop" command:
 
-	root@nvidia-orin-agx:~# jtop
+	root@<MACHINE>:~# jtop
 
 After running the jtop tool, there are some tab items at the bottom of screen.
 
@@ -838,8 +838,8 @@ WRlinux has integrated CUDA libs and some samples so that users can develop and 
 There are some cuda sample applications in directory /usr/bin/cuda-samples.
 For example, user can run the "simplePrintf" application with below commands:
 
-root@nvidia-orin-agx:~# cd /usr/bin/cuda-samples
-root@nvidia-orin-agx:/usr/bin/cuda-samples# ./simplePrintf
+root@<MACHINE>:~# cd /usr/bin/cuda-samples
+root@<MACHINE>:/usr/bin/cuda-samples# ./simplePrintf
 
 GPU Device 0: "Ampere" with compute capability 8.7
 
@@ -866,8 +866,8 @@ The simplePrintf sample creates 32 threads running GPU cores parallel.
 
 Run below command to check the Graphics performance of NVIDIA Orin platform:
 
-root@nvidia-orin-agx:~# export DISPLAY=:0
-root@nvidia-orin-agx:~# es2gears_x11
+root@<MACHINE>:~# export DISPLAY=:0
+root@<MACHINE>:~# es2gears_x11
 EGL_VERSION = 1.5
 vertex shader info:
 fragment shader info:
@@ -904,8 +904,8 @@ Note: If the camera_overrides.isp file has license limitation, users MUST consul
 
 <3> Run below command to start camera preview
 
-root@nvidia-orin-agx:~# export DISPLAY=:0
-root@nvidia-orin-agx:~# gst-launch-1.0 nvarguscamerasrc ! 'video/x-raw(memory:NVMM), width=(int)1920, height=(int)1080, \
+root@<MACHINE>:~# export DISPLAY=:0
+root@<MACHINE>:~# gst-launch-1.0 nvarguscamerasrc ! 'video/x-raw(memory:NVMM), width=(int)1920, height=(int)1080, \
                                        format=(string)NV12, framerate=(fraction)30/1' ! nvvidconv ! nvegltransform ! queue ! nveglglessink -e
 
 7.5.2 Video decode
@@ -913,7 +913,7 @@ root@nvidia-orin-agx:~# gst-launch-1.0 nvarguscamerasrc ! 'video/x-raw(memory:NV
 
 Deploy a mp4 video clip onto board, and then run below command:
 
-root@nvidia-orin-agx:~# gst-launch-1.0 filesrc location=<filename.mp4> ! decodebin name=dec ! nvvidconv ! nvegltransform ! nveglglessink
+root@<MACHINE>:~# gst-launch-1.0 filesrc location=<filename.mp4> ! decodebin name=dec ! nvvidconv ! nvegltransform ! nveglglessink
 
 7.5.3 Video encode
 ------------------
@@ -921,14 +921,14 @@ root@nvidia-orin-agx:~# gst-launch-1.0 filesrc location=<filename.mp4> ! decodeb
 <1> Capture data from camera and encode with below command:
 
 Only record data:
-root@nvidia-orin-agx:~# gst-launch-1.0 nvarguscamerasrc ! \
+root@<MACHINE>:~# gst-launch-1.0 nvarguscamerasrc ! \
                                        'video/x-raw(memory:NVMM), width=(int)1920, height=(int)1080, \
                                        format=(string)NV12, framerate=(fraction)30/1' ! nvvidconv ! \
                                        'video/x-raw(memory:NVMM), format=I420' ! nvv4l2h264enc ! \
                                        h264parse ! qtmux ! filesink location=output.mp4 -e
 
 Record data and preview:
-root@nvidia-orin-agx:~# gst-launch-1.0 nvarguscamerasrc ! tee name=t ! \
+root@<MACHINE>:~# gst-launch-1.0 nvarguscamerasrc ! tee name=t ! \
                                        'video/x-raw(memory:NVMM), width=(int)1920, height=(int)1080, \
                                        format=(string)NV12, framerate=(fraction)30/1' ! queue ! nvvideoconvert ! nvegltransform ! nveglglessink t. ! queue ! nvvidconv ! \
                                        'video/x-raw(memory:NVMM), format=I420' ! nvv4l2h264enc ! \
@@ -936,7 +936,7 @@ root@nvidia-orin-agx:~# gst-launch-1.0 nvarguscamerasrc ! tee name=t ! \
 
 <2> Play the recorded video clip with below command:
 
-root@nvidia-orin-agx:~# gst-launch-1.0 filesrc location=./output.mp4 ! decodebin name=dec ! nvvidconv ! nvegltransform ! nveglglessink
+root@<MACHINE>:~# gst-launch-1.0 filesrc location=./output.mp4 ! decodebin name=dec ! nvvidconv ! nvegltransform ! nveglglessink
 
 7.5.4 Audio decode
 ------------------
@@ -945,18 +945,18 @@ If users want to verify audio feature of NVIDIA Orin platform, please connect a 
 
 <1> Play audio encoded with ACC from a mp4 file with below command:
 
-root@nvidia-orin-agx:~# gst-launch-1.0 filesrc location=<filename.mp4> ! qtdemux name=demux demux.audio_0 ! queue ! avdec_aac ! audioconvert ! alsasink -e
+root@<MACHINE>:~# gst-launch-1.0 filesrc location=<filename.mp4> ! qtdemux name=demux demux.audio_0 ! queue ! avdec_aac ! audioconvert ! alsasink -e
 
 <2> Play a mp3 file with below command:
 
-root@nvidia-orin-agx:~# gst-launch-1.0 filesrc location=<filename.mp3> ! mpegaudioparse ! avdec_mp3 ! audioconvert ! alsasink -e
+root@<MACHINE>:~# gst-launch-1.0 filesrc location=<filename.mp3> ! mpegaudioparse ! avdec_mp3 ! audioconvert ! alsasink -e
 
 7.5.5 Audio and Video decode
 ----------------------------
 
 Play audio and video from a mp4 file at the same time with below command:
 
-root@nvidia-orin-agx:~# gst-launch-1.0 filesrc location=<filename.mp4> ! decodebin name=decoder decoder. \
+root@<MACHINE>:~# gst-launch-1.0 filesrc location=<filename.mp4> ! decodebin name=decoder decoder. \
                                        ! queue ! nvvidconv ! nvegltransform ! nveglglessink decoder. ! queue ! audioconvert ! alsasink
 
 7.6 DeepStream
@@ -988,9 +988,9 @@ So, if the DeepStream applications can work fine, it can prove the CUDA and Deep
 It is a simple example that uses DeepStream element to detect cars, persons, and bikes on a given single H.264 stream.
 Run DeepStream Application-1 with below commands:
 
-root@nvidia-orin-agx:~# export DISPLAY=:0
-root@nvidia-orin-agx:~# cd /opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test1
-root@nvidia-orin-agx:/opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test1# \
+root@<MACHINE>:~# export DISPLAY=:0
+root@<MACHINE>:~# cd /opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test1
+root@<MACHINE>:/opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test1# \
                           deepstream-test1-app /opt/nvidia/deepstream/deepstream-7.1/samples/streams/sample_720p.h264
 
 At the first time of running DeepStream application, it needs spend some time to create engine from model files.
@@ -1002,9 +1002,9 @@ Because the DeepStream find out persons, cars and bikes from the traffic video c
 The second DeepStream application is more powerful than the first one.
 Run DeepStream Application-2 with below commands:
 
-root@nvidia-orin-agx:~# export DISPLAY=:0
-root@nvidia-orin-agx:~# cd /opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test2
-root@nvidia-orin-agx:/opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test2# \
+root@<MACHINE>:~# export DISPLAY=:0
+root@<MACHINE>:~# cd /opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test2
+root@<MACHINE>:/opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test2# \
                           deepstream-test2-app /opt/nvidia/deepstream/deepstream-7.1/samples/streams/sample_720p.h264
 
 At the first time of running DeepStream application, it needs spend some time to create engine from model files.
@@ -1019,9 +1019,9 @@ The third application show DeepStream can accept more than one video streams as 
 streams at the same time, and show them with Multiview style on the screen.
 Run DeepStream Application-3 with below commands:
 
-root@nvidia-orin-agx:~# export DISPLAY=:0
-root@nvidia-orin-agx:~# cd /opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test3
-root@nvidia-orin-agx:/opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test3# \
+root@<MACHINE>:~# export DISPLAY=:0
+root@<MACHINE>:~# cd /opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test3
+root@<MACHINE>:/opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test3# \
                           deepstream-test3-app file:///opt/nvidia/deepstream/deepstream-7.1/samples/streams/sample_1080p_h264.mp4 \
                           file:///opt/nvidia/deepstream/deepstream-7.1/samples/streams/sample_720p.mp4
 
@@ -1047,14 +1047,14 @@ User can run NVIDIA official container with belwo steps.
 <1> Set correct system time
 
 Open timesyncd configuration file with below command:
-root@nvidia-orin-agx:~# vim /etc/systemd/timesyncd.conf
+root@<MACHINE>:~# vim /etc/systemd/timesyncd.conf
 
 Add a reasonable NTP server, and then restart systemd-timesyncd service with below command:
-root@nvidia-orin-agx:~# systemctl restart systemd-timesyncd.service
+root@<MACHINE>:~# systemctl restart systemd-timesyncd.service
 
 And then check time sync status with below command:
-root@nvidia-orin-agx:~# timedatectl timesync-status
-root@nvidia-orin-agx:~# date
+root@<MACHINE>:~# timedatectl timesync-status
+root@<MACHINE>:~# date
 
 <2> Network Access Permissions(Optional)
 
@@ -1064,32 +1064,31 @@ In addition, a network agent may be also an essential configuration to access In
 
 <3> Restart docker service
 
-root@nvidia-orin-agx:~# systemctl restart docker
-root@nvidia-orin-agx:~# systemctl status docker
+root@<MACHINE>:~# systemctl restart docker
+root@<MACHINE>:~# systemctl status docker
 
 <4> Pull NVIDIA container
 
-root@nvidia-orin-agx:~# docker pull nvcr.io/nvidia/deepstream-l4t:7.1-triton-multiarch
+root@<MACHINE>:~# docker pull nvcr.io/nvidia/deepstream-l4t:7.1-triton-multiarch
 
 Users also can pull other containers from below link:
 https://catalog.ngc.nvidia.com/orgs/nvidia/containers/deepstream-l4t
 
 <5> Run NVIDIA container
 
-root@nvidia-orin-agx:~# export DISPLAY=:0
+root@<MACHINE>:~# export DISPLAY=:0
 
 Allow external applications to connect to the host's X display
-root@nvidia-orin-agx:~# xhost +
+root@<MACHINE>:~# xhost +
 
-root@nvidia-orin-agx:~# docker run -it --rm --network=host --runtime nvidia -e DISPLAY=$DISPLAY -w /opt/nvidia/deepstream/deepstream-7.1 \
+root@<MACHINE>:~# docker run -it --rm --network=host --runtime nvidia -e DISPLAY=$DISPLAY -w /opt/nvidia/deepstream/deepstream-7.1 \
                                    -v /tmp/.X11-unix/:/tmp/.X11-unix nvcr.io/nvidia/deepstream-l4t:7.1-triton-multiarch
 
 <6> Run DeepStream demo in container
 
-0;root@nvidia-orin-agx: /opt/nvidia/deepstream/deepstream-7.1root@nvidia-orin-agx:/opt/nvidia/deepstream/deepstream-7.1# \
+root@<MACHINE>:/opt/nvidia/deepstream/deepstream-7.1# \
                         cd /opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test1
-0;root@nvidia-orin-agx: /opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test1root@nvidia-orin-agx:\
-                        /opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test1# deepstream-test1-app \
+root@<MACHINE>:/opt/nvidia/deepstream/deepstream-7.1/sources/apps/sample_apps/deepstream-test1# deepstream-test1-app \
                         /opt/nvidia/deepstream/deepstream-7.1/samples/streams/sample_720p.h264
 
 Note: NFS is not able to serve as the backing filesystem, so users need to deploy WRLinux system on eMMC if they want to run container image.
@@ -1131,45 +1130,45 @@ Detailed connection layout as below:
 <1> Set pinmux CAN ports with below commands:
 
 Set CAN0 In pin
-root@nvidia-orin-agx:~# devmem2 0x0c303018
-root@nvidia-orin-agx:~# devmem2 0x0c303018 h 0xc458
+root@<MACHINE>:~# devmem2 0x0c303018
+root@<MACHINE>:~# devmem2 0x0c303018 h 0xc458
 
 Set CAN0 Out pin
-root@nvidia-orin-agx:~# devmem2 0x0c303010
-root@nvidia-orin-agx:~# devmem2 0x0c303010 h 0xc400
+root@<MACHINE>:~# devmem2 0x0c303010
+root@<MACHINE>:~# devmem2 0x0c303010 h 0xc400
 
 Set CAN1 In pin
-root@nvidia-orin-agx:~# devmem2 0x0c303008
-root@nvidia-orin-agx:~# devmem2 0x0c303008 h 0xc458
+root@<MACHINE>:~# devmem2 0x0c303008
+root@<MACHINE>:~# devmem2 0x0c303008 h 0xc458
 
 Set CAN1 Out pin
-root@nvidia-orin-agx:~# devmem2 0x0c303000
-root@nvidia-orin-agx:~# devmem2 0x0c303000 h 0xc400
+root@<MACHINE>:~# devmem2 0x0c303000
+root@<MACHINE>:~# devmem2 0x0c303000 h 0xc400
 
 <2> Reload CAN driver below commands:
-root@nvidia-orin-agx:~# modprobe -r mttcan
-root@nvidia-orin-agx:~# modprobe mttcan
+root@<MACHINE>:~# modprobe -r mttcan
+root@<MACHINE>:~# modprobe mttcan
 
 <3> Setup can0 and can1 with below command:
-root@nvidia-orin-agx:~# ip link set can0 up type can bitrate 500000 dbitrate 1000000 berr-reporting on fd on
-root@nvidia-orin-agx:~# ip link set can1 up type can bitrate 500000 dbitrate 1000000 berr-reporting on fd on
-root@nvidia-orin-agx:~# ifconfig
+root@<MACHINE>:~# ip link set can0 up type can bitrate 500000 dbitrate 1000000 berr-reporting on fd on
+root@<MACHINE>:~# ip link set can1 up type can bitrate 500000 dbitrate 1000000 berr-reporting on fd on
+root@<MACHINE>:~# ifconfig
 
 <4> Data send(can1) and receive(can0)
-root@nvidia-orin-agx:~# candump can0 &
+root@<MACHINE>:~# candump can0 &
 
 Send a frame to can1 with CAN ID 123 and data "abcdabcd"
-root@nvidia-orin-agx:~# cansend can1 123#abcdabcd
+root@<MACHINE>:~# cansend can1 123#abcdabcd
 
 Send a FD frame to can1 with CAN ID 123, flag bit 1, and data "abcdabcd"
-root@nvidia-orin-agx:~# cansend can1 123##1abcdabcd
+root@<MACHINE>:~# cansend can1 123##1abcdabcd
 
 Use cangen tool to generate CAN frame
-root@nvidia-orin-agx:~# cangen can1
+root@<MACHINE>:~# cangen can1
 
 <5> Check data sending and receiving on can0 and can1 with below command:
-root@nvidia-orin-agx:~# ip -details -statistics link show can0
-root@nvidia-orin-agx:~# ip -details -statistics link show can1
+root@<MACHINE>:~# ip -details -statistics link show can0
+root@<MACHINE>:~# ip -details -statistics link show can1
 
 7.9 WIFI/BT
 -----------
@@ -1184,29 +1183,29 @@ Introduction link: https://www.waveshare.com/wireless-aw-cb375nf.htm
 
 <1> Setup WIFI module with below command:
 
-root@nvidia-orin-agx:~# ifconfig wlP1p1s0 up
-root@nvidia-orin-agx:~# iw wlP1p1s0 scan
-root@nvidia-orin-agx:~# iw dev wlP1p1s0 connect <AP essid>
-root@nvidia-orin-agx:~# iw dev wlP1p1s0 link
-root@nvidia-orin-agx:~# dhcpcd wlP1p1s0
+root@<MACHINE>:~# ifconfig wlP1p1s0 up
+root@<MACHINE>:~# iw wlP1p1s0 scan
+root@<MACHINE>:~# iw dev wlP1p1s0 connect <AP essid>
+root@<MACHINE>:~# iw dev wlP1p1s0 link
+root@<MACHINE>:~# dhcpcd wlP1p1s0
 
 <2> Ping AP with below command:
 
-root@nvidia-orin-agx:~# ping <AP address> -I wlP1p1s0 -c 5
+root@<MACHINE>:~# ping <AP address> -I wlP1p1s0 -c 5
 
 7.9.2 BT Demonstration
 ----------------------
 
 <1> Setup BT module with below command:
 
-root@nvidia-orin-agx:~# hciconfig hci0 up
-root@nvidia-orin-agx:~# hcitool -i hci0 scan
-root@nvidia-orin-agx:~# hcitool cc <BT MAC address>
-root@nvidia-orin-agx:~# hcitool con
+root@<MACHINE>:~# hciconfig hci0 up
+root@<MACHINE>:~# hcitool -i hci0 scan
+root@<MACHINE>:~# hcitool cc <BT MAC address>
+root@<MACHINE>:~# hcitool con
 
 <2> Ping remote BT device with below command:
 
-root@nvidia-orin-agx:~# l2ping -c 5 <BT MAC address>
+root@<MACHINE>:~# l2ping -c 5 <BT MAC address>
 
 7.10 USB
 --------
@@ -1235,7 +1234,7 @@ When users connect the USB Type-C port with Host PC, it can work in USB device m
 For example, NVIDIA Orin board can work as USB disk.
 Insert a USB disk into USB Type-A port of NVIDIA Orin board, and then run below command:
 
-root@nvidia-orin-agx:~# modprobe g_mass_storage file=/dev/sdaX stall=0 removable=1
+root@<MACHINE>:~# modprobe g_mass_storage file=/dev/sdaX stall=0 removable=1
 
 After running above command, there will be an USB disk detected on Host PC.
 
@@ -1248,11 +1247,11 @@ For NVIDIA Orin AGX platform:
 There is a microSD card slot(J10) on the NVIDIA Orin AGX board.
 When user insert a microSD card into slot, it will be detected, detailed output as below:
 
-root@nvidia-orin-agx:~#
+root@<MACHINE>:~#
 mmc1: new ultra high speed SDR104 SDHC card at address 5048
 mmcblk1: mmc1:5048 SD32G 28.8 GiB
  mmcblk1: p1 p2
-root@nvidia-orin-agx:~# ls /dev/mmcblk1*
+root@<MACHINE>:~# ls /dev/mmcblk1*
 /dev/mmcblk1  /dev/mmcblk1p1  /dev/mmcblk1p2
 
 7.12 NVME card
@@ -1262,7 +1261,7 @@ For NVIDIA Orin AGX platform:
 There is a M.2 M-Key slot(J11) on the NVIDIA Orin AGX board.
 When user insert a NVME card into slot, it will be detected after system boots up, detailed output as below:
 
-root@nvidia-orin-agx:~# ls /dev/nvme0*
+root@<MACHINE>:~# ls /dev/nvme0*
 /dev/nvme0  /dev/nvme0n1  /dev/nvme0n1p1
 
 7.13 PCIe
@@ -1282,13 +1281,13 @@ User can verify PCIe feature with below steps:
 
 <4> After system boots up, verify PCIe feature with below command:
 
-root@nvidia-orin-agx:~# lspci
+root@<MACHINE>:~# lspci
 0005:00:00.0 PCI bridge: NVIDIA Corporation Device 229a (rev a1)
 0005:01:00.0 Ethernet controller: Intel Corporation 82574L Gigabit Network Connection
 
-root@nvidia-orin-agx:~# ifconfig
-root@nvidia-orin-agx:~# ethtool <PCIe network card interface name>
-root@nvidia-orin-agx:~# ping <Remote PC IP address> -I <PCIe network card interface name> -c 5
+root@<MACHINE>:~# ifconfig
+root@<MACHINE>:~# ethtool <PCIe network card interface name>
+root@<MACHINE>:~# ping <Remote PC IP address> -I <PCIe network card interface name> -c 5
 
 7.14 OP-TEE
 -----------
