@@ -17,11 +17,15 @@ This BSP supports the following boards:
 
    + Nvidia Jetson AGX Orin developer kit: Jetson AGX Orin 64GB module (P3701-0005) +
 					   Jetson AGX Orin reference carrier board (P3737-0000)
+   + Nvidia Jetson Orin Nano developer kit: Jetson Orin Nano 8GB-DRAM module (P3767-0005) +
+					   Jetson Orin Nano reference carrier board (P3768-0000)
 
 
 2. Change History
 =================
   - 2025/09 (LINUXPG-2676): Wind River Linux 10.25 RCPL01. Standard and Preempt-rt based on
+			    NVIDIA Jetpack 6.2, Jetson Linux 36.4.3 and OpenEmbedded for Tegra.
+  - 2025/11 (LINUXPG-2761): Wind River Linux 10.25 RCPL03. Standard and Preempt-rt based on
 			    NVIDIA Jetpack 6.2, Jetson Linux 36.4.3 and OpenEmbedded for Tegra.
 
 
