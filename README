@@ -97,8 +97,11 @@ Note: If users want to integrate NVIDIA Proprietary package into their own produ
 	For NVIDIA Orin AGX:
 	--machine nvidia-orin-agx --distro wrlinux-graphics --dl-layers --all-layers --accept-eula=yes
 
-	For NVIDIA Orin Nano:
+	For NVIDIA Orin Nano(Boot from NVME):
 	--machine nvidia-orin-nano --distro wrlinux-graphics --dl-layers --all-layers --accept-eula=yes
+
+	For NVIDIA Orin Nano(Boot from SD):
+	--machine nvidia-orin-nano --distro wrlinux-graphics --dl-layers --all-layers --accept-eula=yes --templates feature/sd_boot
 
 4.2 Setup environment and create a build directory
 --------------------------------------------------
@@ -321,8 +324,8 @@ For NVIDIA Orin Nano board:
 <1>. Get the high quality USB Type-C cable shipped with NVIDIA Orin development kit, connect the
      USB Type-C end to J5 of NVIDIA Orin Nano board, connect another end to PC host.
 
-<2>. Install a NVMe card onto J11 of NVIDIA Orin Nano board.
-
+<2>. Install a NVMe card into J11 of NVIDIA Orin Nano board for NVMe boot mode.
+     Install a SD card into SD slot of NVIDIA Orin Nano board for SD boot mode.
 
 5.3 Force Board into Recovery Mode
 ----------------------------------
@@ -386,7 +389,7 @@ For NVIDIA Orin AGX board:
 
 For NVIDIA Orin Nano board:
 
-    Burn images into eMMC with below commands:
+    Burn images into NVME with below commands:
 
     # cd nvidia-deploy
     # sudo ./initrd-flash
@@ -397,7 +400,46 @@ For NVIDIA Orin Nano board:
     Host-side log:              log.initrd-flash.2025-09-23-12.21.27
     Device-side logs stored in: device-logs-2025-09-23-12.21.27
 
-Note: Burning time is about 20 minutes, if burning action failed, please repeat the steps in section 5.3 and 5.4.
+    Note: Burning time is about 20 minutes, if burning action failed, please repeat the steps in section 5.3 and 5.4.
+
+    Burn images into SD card with below commands:
+
+    # cd nvidia-deploy
+    # sudo ./doflash.sh
+
+    After burning completely, there will be output as below:
+
+    ......
+    [ 269.0302 ] Flashing completed
+    [ 269.0302 ] Coldbooting the device
+    [ 269.0307 ] tegrarcm_v2 --chip 0x23 0 --ismb2
+    [ 269.0312 ] MB2 version 01.00.0000
+    [ 269.0330 ] Coldbooting the device
+    [ 269.0334 ] tegrarcm_v2 --chip 0x23 0 --reboot coldboot
+    [ 269.0338 ] MB2 version 01.00.0000
+
+    Burn images into SD card from PC Host:
+
+    <1> Burn bootloader into qspi flash with below commands
+
+    # cd nvidia-deploy
+    # sudo ./doflash.sh --spi-only
+
+    <2> Create Nano SD image file with below commands
+
+    # cd nvidia-deploy
+    # sudo ./dosdcard.sh <nano-sd-image>.img
+
+    <3> Burn Nano SD image into SD card with below commands
+
+    Install SD card into USB SD reader, and connect with PC Host.
+
+    # cd nvidia-deploy
+    # sudo dd if=<nano-sd-image>.img of=/dev/sd<X> conv=fsync bs=200M status=progress
+
+    Note1: X is the device name of current USB SD reader, please carefully determine it.
+           Otherwise, using the wrong device name could destroy PC host's filesystems.
+    Note2: SD card size is at least 64GB.
 
 
 6. Boot Instructions
