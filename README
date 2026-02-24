@@ -1,5 +1,43 @@
 		NVIDIA Jetson AGX Orin Series Board Support Package
 
+0. Catalogue
+============
+
+1. About this document
+2. BSP Kernel and Distros
+3. Board Specific Patches
+4. Build Instructions
+   4.1 Setup BSP project
+   4.2 Setup environment and create a build directory
+   4.3 Setup local.conf
+   4.4 Build project
+5. Deploy Instructions
+   5.1 Create Deploying Environment
+   5.2 Connect NVIDIA Orin Board with Host
+   5.3 Force Board into Recovery Mode
+   5.4 Burn images into NVIDIA Orin board
+6. Boot Instructions
+   6.1 Boot from Storage Device
+   6.2 Boot from Network
+7. Features
+   7.1 Power and Performance
+   7.2 System Monitoring Tool
+   7.3 CUDA
+   7.4 3D Graphics
+   7.5 Multimedia
+   7.6 DeepStream
+   7.7 NVIDIA Container Toolkit
+   7.8 CAN bus
+   7.9 WIFI/BT
+   7.10 USB
+   7.11 microSD card
+   7.12 NVME card
+   7.13 PCIe
+   7.14 OP-TEE
+8. References
+9. Known Issues
+   9.1 dm-verity Limitation
+
 
 1. About this document
 ======================
@@ -91,8 +129,8 @@ are able to be downloaded during building project.
 Note: If users want to integrate NVIDIA Proprietary package into their own product,
       they MUST consult NVIDIA and their own legal department.
 
-4.1 Setup BSP project with the following arguments
---------------------------------------------------
+4.1 Setup BSP project
+---------------------
 
 	For NVIDIA Orin AGX:
 	--machine nvidia-orin-agx --distro wrlinux-graphics --dl-layers --all-layers --accept-eula=yes
@@ -109,8 +147,10 @@ Note: If users want to integrate NVIDIA Proprietary package into their own produ
 	$ . environment-setup-x86_64-wrlinuxsdk-linux
 	$ . oe-init-build-env [<build>]
 
-4.3 Add below configurations at the end of local.conf
------------------------------------------------------
+4.3 Setup local.conf
+--------------------
+
+Add below configurations at the end of local.conf
 
 BB_NO_NETWORK = '0'
 LICENSE_FLAGS_ACCEPTED += "commercial_faad2 commercial_x264 commercial"
@@ -287,8 +327,10 @@ CUSTOMER_RECIPES:tegra-community += 'openssl111'
 CUSTOMER_RECIPES:tegra-community += 'yaml-cpp-070'
 CUSTOMER_RECIPES:tegra-community += 'python3-pyclibrary'
 
-4.4 Build project with below command
-------------------------------------
+4.4 Build project
+-----------------
+
+Build project with below command:
 
 	bitbake wrlinux-image-std-sato
 
@@ -349,6 +391,9 @@ For NVIDIA Orin AGX board:
 
     If the host PC detect above device, it indicates that NVIDIA Orin AGX board enters into recovery mode successfully.
 
+Note: user also can refer to below link with graphics introduction.
+      https://developer.nvidia.com/embedded/learn/jetson-agx-orin-devkit-user-guide/howto.html#force-recovery-mode
+
 For NVIDIA Orin Nano board:
 
 <1> Power off NVIDIA Orin Nano board by turning off power supply.
@@ -365,6 +410,9 @@ For NVIDIA Orin Nano board:
     ......
 
     If the host PC detect above device, it indicates that NVIDIA Orin Nano board enters into recovery mode successfully.
+
+Note: user also can refer to below link with graphics introduction.
+      https://developer.nvidia.com/embedded/learn/jetson-orin-nano-devkit-user-guide/howto.html#force-recovery-mode
 
 5.4 Burn images into NVIDIA Orin board
 --------------------------------------
@@ -389,6 +437,10 @@ For NVIDIA Orin AGX board:
 
 For NVIDIA Orin Nano board:
 
+    There are 2 kinds of storage device that are able to be used to deploy image on Nano board.
+
+<1> NVME Card
+
     Burn images into NVME with below commands:
 
     # cd nvidia-deploy
@@ -402,7 +454,11 @@ For NVIDIA Orin Nano board:
 
     Note: Burning time is about 20 minutes, if burning action failed, please repeat the steps in section 5.3 and 5.4.
 
-    Burn images into SD card with below commands:
+<2> SD Card
+
+<2.1> Burn images into SD card with USB cable
+
+    Force board into recovery mode and then follow below commands:
 
     # cd nvidia-deploy
     # sudo ./doflash.sh
@@ -418,34 +474,46 @@ For NVIDIA Orin Nano board:
     [ 269.0334 ] tegrarcm_v2 --chip 0x23 0 --reboot coldboot
     [ 269.0338 ] MB2 version 01.00.0000
 
-    Burn images into SD card from PC Host:
+<2.2> Burn images into SD card from PC Host
 
-    <1> Burn bootloader into qspi flash with below commands
+      <2.2.1> Burn bootloader into qspi flash with USB cable
 
-    # cd nvidia-deploy
-    # sudo ./doflash.sh --spi-only
+              Force board into recovery mode and then follow below commands:
 
-    <2> Create Nano SD image file with below commands
+              # cd nvidia-deploy
+              # sudo ./doflash.sh --spi-only
 
-    # cd nvidia-deploy
-    # sudo ./dosdcard.sh <nano-sd-image>.img
+      <2.2.2> Create Nano SD image file with below commands
 
-    <3> Burn Nano SD image into SD card with below commands
+              # cd nvidia-deploy
+              # sudo ./dosdcard.sh <nano-sd-image>.img
 
-    Install SD card into USB SD reader, and connect with PC Host.
+      <2.2.3> Burn Nano SD image into SD card with below commands
 
-    # cd nvidia-deploy
-    # sudo dd if=<nano-sd-image>.img of=/dev/sd<X> conv=fsync bs=200M status=progress
+              Install SD card into USB SD reader, and connect with PC Host.
 
-    Note1: X is the device name of current USB SD reader, please carefully determine it.
-           Otherwise, using the wrong device name could destroy PC host's filesystems.
-    Note2: SD card size is at least 64GB.
+              # cd nvidia-deploy
+              # sudo dd if=<nano-sd-image>.img of=/dev/sd<X> conv=fsync bs=200M status=progress
+
+              Note1: X is the device name of current USB SD reader, please carefully determine it.
+                     Otherwise, using the wrong device name could destroy PC host's filesystems.
+              Note2: SD card size is at least 64GB.
+              Note3: SD boot feature generates SD image for 64GB SD card by default. If user wants to
+                     use other size SD card. There are 2 below variables needing to be set correspondingly
+                     in local.conf, especially the SD card size is smaller than 64GB.
+                     TEGRAFLASH_SDCARD_SIZE = "<SD image size>"
+                     ROOTFSPART_SIZE_DEFAULT = "<rootfs size>"
+                     About the TEGRAFLASH_SDCARD_SIZE variable, because SD card reserved space for wearing leveling,
+                     bad block management, controller firmware, error correction, redundancy data and so on. The usable
+                     space can't reach size declared on the packaging. Therefore, user needs to consider this limitation,
+                     and reduce the size of SD image to make sure it is able to be deployed into most of SD cards.
+                     For example, if user uses a 64GB SD card, it recommends that TEGRAFLASH_SDCARD_SIZE is set as 63G.
 
 
 6. Boot Instructions
 ====================
 
-6.1 Boot from storage device
+6.1 Boot from Storage Sevice
 ----------------------------
 
 6.1.1 Boot from internal eMMC
@@ -479,7 +547,7 @@ For NVIDIA Orin Nano board:
    root@<MACHINE>:~# uname -a
    Linux <MACHINE> 6.12.33-yocto-standard #1 SMP PREEMPT Fri Jun 20 01:52:55 UTC 2025 aarch64 GNU/Linux
 
-6.2 Boot From Network
+6.2 Boot from Network
 ---------------------
 
 Precondition 1: In order to boot from network environment, there must be a common DHCP server and setup
